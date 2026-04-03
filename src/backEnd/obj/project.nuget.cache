@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "z/NKwN4BrNfYcCPa6/fDL5Pxm39/9utDZI//azxgb1sLSpcFcFR/GSVXi2xQG8s+/hnh3b4Ipt5yVhytCmeK6g==",
+  "success": true,
+  "projectFilePath": "/mnt/linux-data/Semester-4/Strategi Algotima (IF2211)/Tugas Besar 2025-2026/Tubes2_e621/src/backEnd/backEnd.csproj",
+  "expectedPackageFiles": [
+    "/home/alpaomega1136/.nuget/packages/microsoft.aspnetcore.openapi/8.0.25/microsoft.aspnetcore.openapi.8.0.25.nupkg.sha512",
+    "/home/alpaomega1136/.nuget/packages/microsoft.extensions.apidescription.server/6.0.5/microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "/home/alpaomega1136/.nuget/packages/microsoft.openapi/1.6.14/microsoft.openapi.1.6.14.nupkg.sha512",
+    "/home/alpaomega1136/.nuget/packages/swashbuckle.aspnetcore/6.6.2/swashbuckle.aspnetcore.6.6.2.nupkg.sha512",
+    "/home/alpaomega1136/.nuget/packages/swashbuckle.aspnetcore.swagger/6.6.2/swashbuckle.aspnetcore.swagger.6.6.2.nupkg.sha512",
+    "/home/alpaomega1136/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.6.2/swashbuckle.aspnetcore.swaggergen.6.6.2.nupkg.sha512",
+    "/home/alpaomega1136/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.6.2/swashbuckle.aspnetcore.swaggerui.6.6.2.nupkg.sha512"
+  ],
+  "logs": []
+}
