@@ -4,6 +4,34 @@
 
 @layer base {
   body {
-    @apply bg-background text-gray-200 antialiased m-0 p-0;
+    @apply bg-background text-gray-200 antialiased m-0 p-0 selection:bg-calmBlue selection:text-white;
+    background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent 40%),
+                      radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.03), transparent 40%);
+    background-attachment: fixed;
   }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface/60 backdrop-blur-md border border-white/5 shadow-xl;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A2E39;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
 }
