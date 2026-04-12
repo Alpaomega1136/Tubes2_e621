@@ -7,7 +7,10 @@ function TreeNode({ node, matchedIds, traversalPath, depth = 0 }) {
   const hasChildren = node.children && node.children.length > 0;
 
   const isMatched = matchedIds?.includes(node.id);
-  const isTraversed = traversalPath?.includes(node.id);
+  // const isTraversed = traversalPath?.includes(node.id);
+
+  const visitOrder = traversalPath?.indexOf(node.id);
+  const isTraversed = visitOrder !== -1;
 
   return (
     <div className="select-none relative flex flex-col items-start font-mono text-sm group/node">
@@ -67,12 +70,20 @@ function TreeNode({ node, matchedIds, traversalPath, depth = 0 }) {
         )}
 
         {/* Match Badge */}
-        {isMatched && (
-          <motion.div 
-            initial={{ scale: 0 }} 
-            animate={{ scale: 1 }} 
-            className="ml-auto flex items-center justify-center shrink-0 w-2 h-2 rounded-full bg-neonGreen shadow-[0_0_8px_rgba(16,185,129,1)]"
-          />
+        {isTraversed && (
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-[10px] px-1.5 py-0.5 rounded border border-calmBlue/30 bg-calmBlue/20 text-calmBlue font-bold shadow-sm">
+              #{visitOrder + 1}
+            </span>
+            
+            {isMatched && (
+              <motion.div 
+                initial={{ scale: 0 }} 
+                animate={{ scale: 1 }} 
+                className="w-2 h-2 rounded-full bg-neonGreen shadow-[0_0_8px_rgba(16,185,129,1)]"
+              />
+            )}
+          </div>
         )}
       </motion.div>
 
