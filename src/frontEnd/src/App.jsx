@@ -15,6 +15,7 @@ function App() {
   const [traversalResult, setTraversalResult] = useState(null);
 
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
+  const [animationSpeed, setAnimationSpeed] = useState(400); // ms per step
   const [animatedPath, setAnimatedPath] = useState([]);
   const [currentNodeId, setCurrentNodeId] = useState(null);
   const timerRef = useRef(null);
@@ -65,7 +66,7 @@ function App() {
             setCurrentNodeId(null);
             clearInterval(timerRef.current);
           }
-        }, 80);
+        }, animationSpeed); // Gunakan state kecepatan
       } else {
         setAnimatedPath(path);
         setCurrentNodeId(null);
@@ -112,6 +113,8 @@ function App() {
             loading={loading}
             isAnimationEnabled={isAnimationEnabled}
             setIsAnimationEnabled={setIsAnimationEnabled}
+            animationSpeed={animationSpeed}
+            setAnimationSpeed={setAnimationSpeed}
           />
           <AnimatePresence>
             {traversalResult && (

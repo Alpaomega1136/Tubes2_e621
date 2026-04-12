@@ -15,7 +15,7 @@ export async function scrapeHtml({ url, html }) {
   return res.json();
 }
 
-// Meminta backend untuk menjalankan algoritma pencarian (BFS/DFS) berdasarkan CSS selector
+// Algoritma pencarian (BFS/DFS) berdasarkan CSS selector
 export async function traverseDom({ url, html, selector, algorithm, maxResults }) {
   const res = await fetch(`${BASE_URL}/api/traverse`, {
     method: "POST",

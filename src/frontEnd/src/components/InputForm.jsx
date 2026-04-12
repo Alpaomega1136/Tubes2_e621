@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function InputForm({ onScrape, onTraverse, loading, isAnimationEnabled, setIsAnimationEnabled }) {
+export default function InputForm({ onScrape, onTraverse, loading, isAnimationEnabled, setIsAnimationEnabled, animationSpeed, setAnimationSpeed }) {
   const [inputMode, setInputMode] = useState("url");
   const [url, setUrl] = useState("");
   const [html, setHtml] = useState("");
@@ -111,6 +111,28 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
             />
           </div>
         </div>
+
+        {isAnimationEnabled && (
+          <div className="flex flex-col gap-2 p-3 rounded-xl bg-surface/20 border border-borderDrop/30">
+            <div className="flex justify-between items-center text-xs text-gray-400">
+              <span>Kecepatan Animasi</span>
+              <span className="font-mono text-calmBlue-light bg-calmBlue/10 px-2 py-0.5 rounded">{animationSpeed}ms/step</span>
+            </div>
+            <input
+              type="range"
+              min="50"
+              max="1500"
+              step="50"
+              value={animationSpeed}
+              onChange={(e) => setAnimationSpeed(Number(e.target.value))}
+              className="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-calmBlue"
+            />
+            <div className="flex justify-between text-[9px] text-gray-500 uppercase">
+              <span>Kencang (50ms)</span>
+              <span>Lambat (1.5s)</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">
