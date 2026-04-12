@@ -13,7 +13,11 @@ builder.Services.AddCors(options => {
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => 
+    {
+        options.JsonSerializerOptions.MaxDepth = 256;
+    });
 
 builder.Services.AddScoped<DomParserService>();
 builder.Services.AddScoped<TraversalService>();

@@ -10,7 +10,7 @@ export async function scrapeHtml({ url, html }) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || "Scrape failed");
+    throw new Error(err.Error || err.error || "Scrape failed (Backend Error)");
   }
   return res.json();
 }
@@ -30,7 +30,7 @@ export async function traverseDom({ url, html, selector, algorithm, maxResults }
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || "Traversal failed");
+    throw new Error(err.Error || err.error || "Traversal failed (Backend Error)");
   }
   return res.json();
 }

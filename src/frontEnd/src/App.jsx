@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"; 
+import { useState, useRef } from "react";
 import InputForm from "./components/InputForm";
 import TreeView from "./components/TreeView";
 import ResultsPanel from "./components/ResultsPanel";
@@ -95,6 +95,17 @@ function App() {
 
       <main className="max-w-7xl mx-auto p-6 md:p-8 grid grid-cols-1 xl:grid-cols-[400px_1fr] gap-8 animate-fade-in">
         <motion.div className="space-y-6" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+          {error && (
+            <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-xl flex items-start gap-3 animate-slide-up">
+              <svg className="w-5 h-5 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="flex-1 text-sm font-medium">{error}</div>
+              <button type="button" onClick={() => setError(null)} className="text-red-400 hover:text-red-200">
+                ×
+              </button>
+            </div>
+          )}
           <InputForm
             onScrape={handleScrape}
             onTraverse={handleTraverse}
