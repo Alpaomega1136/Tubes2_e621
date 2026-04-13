@@ -14,20 +14,28 @@ namespace backEnd.algorithms {
                 if (maxResults.HasValue && matches.Count >= maxResults.Value) break;
 
                 int levelSize = queue.Count;
-                var currentLevelNodes = new List<DomNode>();
-                
-                for (int i = 0; i < levelSize; i++) {
-                    if (queue.TryDequeue(out var node)) {
-                        currentLevelNodes.Add(node);
-                    }
-                }
+                var currentLevelNodes = new List<DomNode>(levelSize);
 
-                Parallel.ForEach(currentLevelNodes, node => {
-                    if (maxResults.HasValue && matches.Count >= maxResults.Value) return;
-                    visitAction(node);
-                    foreach (var child in node.Children)  {
-                        queue.Enqueue(child);
+                for (int i = 0; i < levelSize; i++) {
+                    if (queue.TryDequeue(out var node))
+                        currentLevelNodes.Add(node);
+                }
+                Parallel.ForEach(currentLevelNodes, (node, state) => {
+                    if (state.IsStopped) return;
+
+                    if (maxResults.HasValue && matches.Count >= maxResults.Value) {
+                        state.Stop();
+                        return;
                     }
+
+                    visitAction(node);
+
+                    // Cek ulang setelah visitAction
+                    if (maxResults.HasValue && matches.Count >= maxResults.Value)
+                        state.Stop();
+
+                    foreach (var child in node.Children)
+                        queue.Enqueue(child);
                 });
             }
         }
