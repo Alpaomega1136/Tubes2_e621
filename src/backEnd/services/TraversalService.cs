@@ -40,8 +40,7 @@ namespace backEnd.services {
                 BfsAlgorithm.ExecuteParallel(root, LogVisit, maxResults, matchedNodes);
             }
             else {
-                BfsAlgorithm.ExecuteParallel(root, LogVisit, maxResults, matchedNodes); // Placeholder, hapus jika Dfs sudah diimplementasikan
-                // TODO: DFS Algorithm
+                DfsAlgorithm.ExecuteParallel(root, LogVisit, maxResults, matchedNodes);
             }
 
             stopwatch.Stop();
