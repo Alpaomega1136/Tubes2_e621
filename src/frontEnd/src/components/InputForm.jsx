@@ -28,164 +28,148 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
   };
 
   return (
-    <form className="glass-panel rounded-2xl p-6 lg:p-8 space-y-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-400">
-          Search Config
-        </h2>
-      </div>
+    <form className="glass-panel rounded-xl p-4 md:p-5 flex flex-col gap-4 shadow-sm border border-borderDrop/40 bg-surface/10">
 
-      <div className="relative flex p-1 bg-background/80 rounded-xl border border-borderDrop/50 backdrop-blur-sm">
-        {["url", "html"].map((mode) => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => setInputMode(mode)}
-            className={`relative flex-1 py-1.5 text-sm font-semibold capitalize z-10 transition-colors ${inputMode === mode ? "text-white" : "text-gray-400 hover:text-gray-300"}`}
-          >
-            {inputMode === mode && (
-              <motion.div
-                layoutId="inputModeBg"
-                className="absolute inset-0 bg-calmBlue rounded-lg -z-10 shadow-[0_0_12px_rgba(59,130,246,0.3)]"
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+      {/*Sumber HTML */}
+      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+        {/* Toggle Mode */}
+        <div className="flex bg-background/80 rounded-lg p-1 border border-borderDrop/50 shrink-0">
+          {["url", "html"].map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setInputMode(mode)}
+              className={`relative px-4 py-1.5 text-xs font-bold uppercase z-10 transition-colors ${inputMode === mode ? "text-white" : "text-gray-400 hover:text-gray-300"}`}
+            >
+              {inputMode === mode && (
+                <motion.div layoutId="srcModeBg" className="absolute inset-0 bg-calmBlue rounded-md -z-10 shadow-[0_0_8px_rgba(59,130,246,0.2)]" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
+              )}
+              {mode}
+            </button>
+          ))}
+        </div>
+
+        {/* Input Teks */}
+        <div className="flex-1 relative">
+          <AnimatePresence mode="popLayout">
+            {inputMode === "url" ? (
+              <motion.input
+                key="url"
+                initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                type="url" placeholder="https://example.com" value={url} onChange={(e) => setUrl(e.target.value)}
+                className="w-full bg-surface/50 border border-borderDrop rounded-lg px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-calmBlue focus:ring-1 focus:ring-calmBlue/50"
+              />
+            ) : (
+              <motion.textarea
+                key="html"
+                initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                rows={2} placeholder="<html lang='en'>...</html>" value={html} onChange={(e) => setHtml(e.target.value)}
+                className="w-full bg-surface/50 border border-borderDrop rounded-lg px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-calmBlue focus:ring-1 focus:ring-calmBlue/50 font-mono resize-y"
               />
             )}
-            {mode === "url" ? "URL" : "Raw HTML"}
-          </button>
-        ))}
-      </div>
+          </AnimatePresence>
+        </div>
 
-      <div className="space-y-4 relative">
-        <AnimatePresence mode="wait">
-          {inputMode === "url" ? (
-            <motion.div key="url" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-              <input
-                type="url"
-                placeholder="https://example.com"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="w-full bg-surface/50 border border-borderDrop rounded-xl px-4 py-3 text-gray-100 placeholder-gray-500 focus:outline-none focus:border-calmBlue focus:ring-1 focus:ring-calmBlue/50 transition-all shadow-inner"
-              />
-            </motion.div>
-          ) : (
-            <motion.div key="html" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-              <textarea
-                rows={5}
-                placeholder="<html>...</html>"
-                value={html}
-                onChange={(e) => setHtml(e.target.value)}
-                className="w-full bg-surface/50 border border-borderDrop rounded-xl px-4 py-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-calmBlue focus:ring-1 focus:ring-calmBlue/50 font-mono resize-y transition-all shadow-inner"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
+        {/* Tombol Load */}
         <button
           type="button"
           onClick={handleScrape}
           disabled={loading}
-          className="w-full relative overflow-hidden bg-surface hover:bg-borderDrop border border-borderDrop text-calmBlue-light font-semibold py-3 rounded-xl transition-all disabled:opacity-50 active:scale-[0.98] group"
+          className="shrink-0 bg-surface hover:bg-borderDrop border border-borderDrop px-5 py-2.5 md:py-2 rounded-lg text-calmBlue-light text-xs font-bold transition-colors disabled:opacity-50"
         >
-          {loading ? "Parsing DOM..." : "Load & Parse HTML"}
+          {loading ? "Menyiapkan..." : "1. LOAD DOM"}
         </button>
       </div>
 
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-borderDrop to-transparent"></div>
+      <div className="h-px bg-gradient-to-r from-borderDrop/50 via-borderDrop to-transparent opacity-50"></div>
 
-      {/* Traversal Animation Toggle */}
-      <div className="space-y-3">
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Visualizer</label>
-        <div 
-          onClick={() => setIsAnimationEnabled(!isAnimationEnabled)}
-          className="flex items-center justify-between p-3 rounded-xl bg-surface/30 border border-borderDrop/50 cursor-pointer hover:bg-surface/50 transition-all"
-        >
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-gray-200">Step Animation</span>
-            <span className="text-[10px] text-gray-500 uppercase tracking-wider">Animate traversal path</span>
-          </div>
-          <div className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${isAnimationEnabled ? 'bg-calmBlue' : 'bg-gray-700'}`}>
-            <motion.div
-              animate={{ x: isAnimationEnabled ? 22 : 4 }}
-              className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-md"
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
-          </div>
-        </div>
+      {/*Konfigurasi Pencarian */}
+      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
 
-        {isAnimationEnabled && (
-          <div className="flex flex-col gap-2 p-3 rounded-xl bg-surface/20 border border-borderDrop/30">
-            <div className="flex justify-between items-center text-xs text-gray-400">
-              <span>Kecepatan Animasi</span>
-              <span className="font-mono text-calmBlue-light bg-calmBlue/10 px-2 py-0.5 rounded">{animationSpeed}ms/step</span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="1500"
-              step="50"
-              value={animationSpeed}
-              onChange={(e) => setAnimationSpeed(Number(e.target.value))}
-              className="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-calmBlue"
-            />
-            <div className="flex justify-between text-[9px] text-gray-500 uppercase">
-              <span>Kencang (50ms)</span>
-              <span>Lambat (1.5s)</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-3">
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Strategy</label>
-        <div className="grid grid-cols-2 gap-3">
+        {/* Toggle Algoritma */}
+        <div className="flex bg-background/80 rounded-lg p-1 border border-borderDrop/50 shrink-0">
           {["bfs", "dfs"].map((alg) => (
-            <label key={alg} className={`relative flex flex-col items-center p-3 cursor-pointer rounded-xl border transition-all ${algorithm === alg ? "bg-calmBlue/10 border-calmBlue text-calmBlue-light shadow-[0_0_15px_rgba(59,130,246,0.15)]" : "bg-surface/30 border-borderDrop text-gray-400 hover:border-gray-500 hover:bg-surface/50"}`}>
-              <input type="radio" name="algorithm" value={alg} checked={algorithm === alg} onChange={() => setAlgorithm(alg)} className="hidden" />
-              <span className="font-bold text-lg uppercase">{alg}</span>
-              <span className="text-[10px] tracking-wide opacity-70">{alg === 'bfs' ? 'Breadth-First' : 'Depth-First'}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Target Selector</label>
-        <input
-          type="text"
-          placeholder="e.g., div > p.class"
-          value={selector}
-          onChange={(e) => setSelector(e.target.value)}
-          className="w-full bg-surface/50 border border-borderDrop rounded-xl px-4 py-3 text-neonGreen-light placeholder-gray-600 focus:outline-none focus:border-neonGreen focus:ring-1 focus:ring-neonGreen/50 font-mono transition-all shadow-inner"
-        />
-      </div>
-
-      <div className="space-y-3">
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Limit</label>
-        <div className="flex gap-2 p-1 bg-background/80 rounded-xl border border-borderDrop/50 mb-3">
-          {["all", "topn"].map((mode) => (
-            <button key={mode} type="button" onClick={() => setResultMode(mode)} className={`relative flex-1 py-1 text-xs font-semibold uppercase z-10 transition-colors ${resultMode === mode ? "text-white" : "text-gray-400 hover:text-gray-300"}`}>
-              {resultMode === mode && <motion.div layoutId="limitModeBg" className="absolute inset-0 bg-gray-700 rounded-lg -z-10" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />}
-              {mode === "all" ? "All Matches" : "Top N"}
+            <button
+              key={alg}
+              type="button"
+              onClick={() => setAlgorithm(alg)}
+              className={`relative px-4 py-1.5 text-xs font-bold uppercase z-10 transition-colors ${algorithm === alg ? "text-white" : "text-gray-400 hover:text-gray-300"}`}
+            >
+              {algorithm === alg && (
+                <motion.div layoutId="algModeBg" className="absolute inset-0 bg-purple-600/80 rounded-md -z-10 shadow-[0_0_8px_rgba(147,51,234,0.3)]" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
+              )}
+              {alg}
             </button>
           ))}
         </div>
+
+        {/* CSS Selector Input */}
+        <div className="flex-1">
+          <input
+            type="text" placeholder="Target CSS (misal: div > p.class)" value={selector} onChange={(e) => setSelector(e.target.value)}
+            className="w-full bg-surface/50 border border-borderDrop rounded-lg px-3 py-2 text-sm text-neonGreen-light focus:outline-none focus:border-neonGreen focus:ring-1 focus:ring-neonGreen/50 font-mono"
+          />
+        </div>
+
+        {/* Limit Hasil */}
+        <div className="flex gap-2 shrink-0 items-center">
+          <select
+            value={resultMode} onChange={(e) => setResultMode(e.target.value)}
+            className="bg-surface/50 border border-borderDrop rounded-lg px-2 py-2 text-xs text-gray-300 focus:outline-none focus:border-gray-500 cursor-pointer"
+          >
+            <option value="all">Semua Hasil</option>
+            <option value="topn">Top-N</option>
+          </select>
+          <AnimatePresence>
+            {resultMode === "topn" && (
+              <motion.input
+                initial={{ width: 0, opacity: 0 }} animate={{ width: 60, opacity: 1 }} exit={{ width: 0, opacity: 0 }}
+                type="number" min={1} value={topN} onChange={(e) => setTopN(parseInt(e.target.value) || 1)}
+                className="bg-surface/50 border border-borderDrop rounded-lg px-2 py-2 text-xs text-white focus:outline-none"
+              />
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Tombol Eksekusi */}
+        <button
+          type="button"
+          onClick={handleTraverse}
+          disabled={loading || !selector.trim()}
+          className="shrink-0 bg-gradient-to-r from-neonGreen to-neonGreen-dark hover:from-neonGreen-light text-white px-6 py-2.5 md:py-2 rounded-lg text-xs font-bold shadow-[0_0_12px_rgba(16,185,129,0.2)] transition-all disabled:opacity-50 active:scale-95"
+        >
+          EXECUTE
+        </button>
+      </div>
+
+      {/* Visualizer Animation Toggles */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-1 bg-surface/20 p-2.5 rounded-lg border border-borderDrop/30">
+        <div
+          className="flex items-center gap-2.5 cursor-pointer shrink-0"
+          onClick={() => setIsAnimationEnabled(!isAnimationEnabled)}
+        >
+          <div className={`relative w-8 h-4 rounded-full transition-colors duration-300 ${isAnimationEnabled ? 'bg-calmBlue' : 'bg-gray-600'}`}>
+            <motion.div animate={{ x: isAnimationEnabled ? 16 : 2 }} className="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm" transition={{ type: "spring", stiffness: 500, damping: 30 }} />
+          </div>
+          <span className="text-xs font-bold text-gray-300 select-none">Animasi Traversal</span>
+        </div>
+
         <AnimatePresence>
-          {resultMode === "topn" && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-              <input type="number" min={1} value={topN} onChange={(e) => setTopN(parseInt(e.target.value) || 1)} className="w-full bg-surface/50 border border-borderDrop rounded-xl px-4 py-2 text-gray-200 focus:outline-none focus:border-gray-500 text-sm" />
+          {isAnimationEnabled && (
+            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="flex-1 flex items-center gap-3 w-full">
+              <span className="text-[10px] text-gray-500 font-bold uppercase shrink-0 hidden sm:block">Kecepatan:</span>
+              <input
+                type="range" min="50" max="1500" step="50" value={animationSpeed} onChange={(e) => setAnimationSpeed(Number(e.target.value))}
+                className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-calmBlue"
+              />
+              <span className="text-[10px] font-mono text-calmBlue-light bg-calmBlue/10 px-1.5 py-0.5 rounded border border-calmBlue/20 shrink-0">
+                {animationSpeed}ms
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <button
-        type="button"
-        onClick={handleTraverse}
-        disabled={loading || !selector.trim()}
-        className="w-full py-3.5 rounded-xl relative overflow-hidden bg-gradient-to-r from-neonGreen to-neonGreen-dark hover:from-neonGreen-light hover:to-neonGreen text-white font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all disabled:opacity-50 disabled:grayscale active:scale-[0.98]"
-      >
-        {loading ? "Searching..." : "EXECUTE SEARCH"}
-      </button>
     </form>
   );
 }
