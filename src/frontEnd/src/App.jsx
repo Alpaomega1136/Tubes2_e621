@@ -15,6 +15,7 @@ function App() {
   const [traversalResult, setTraversalResult] = useState(null);
 
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
+  const [animationSpeed, setAnimationSpeed] = useState(400); // ms per step
   const [animatedPath, setAnimatedPath] = useState([]);
   const [currentNodeId, setCurrentNodeId] = useState(null);
   const timerRef = useRef(null);
@@ -65,7 +66,7 @@ function App() {
             setCurrentNodeId(null);
             clearInterval(timerRef.current);
           }
-        }, 80);
+        }, animationSpeed);
       } else {
         setAnimatedPath(path);
         setCurrentNodeId(null);
@@ -93,8 +94,10 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-6 md:p-8 grid grid-cols-1 xl:grid-cols-[400px_1fr] gap-8 animate-fade-in">
-        <motion.div className="space-y-6" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+      <main className="max-w-7xl mx-auto p-6 md:p-8 flex flex-col gap-8 animate-fade-in">
+
+        {/*Pengaturan dan Input */}
+        <motion.div className="space-y-6 max-w-4xl mx-auto w-full" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           {error && (
             <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-xl flex items-start gap-3 animate-slide-up">
               <svg className="w-5 h-5 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,17 +115,13 @@ function App() {
             loading={loading}
             isAnimationEnabled={isAnimationEnabled}
             setIsAnimationEnabled={setIsAnimationEnabled}
+            animationSpeed={animationSpeed}
+            setAnimationSpeed={setAnimationSpeed}
           />
-          <AnimatePresence>
-            {traversalResult && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}>
-                <ResultsPanel result={traversalResult} />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
 
-        <motion.div className="flex flex-col gap-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+        {/* Visualisasi Pohon DOM */}
+        <motion.div className="flex flex-col gap-4 w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
           <TreeView
             tree={tree}
             maxDepth={maxDepth}
@@ -133,6 +132,16 @@ function App() {
             loading={loading}
           />
         </motion.div>
+
+        {/* Statistik dan Log Hasil Penelusuran */}
+        <AnimatePresence>
+          {traversalResult && (
+            <motion.div className="w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.5, delay: 0.2 }}>
+              <ResultsPanel result={traversalResult} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </main>
     </div>
   );
