@@ -77,7 +77,7 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
           disabled={loading}
           className="shrink-0 bg-surface hover:bg-borderDrop border border-borderDrop px-5 py-2.5 md:py-2 rounded-lg text-calmBlue-light text-xs font-bold transition-colors disabled:opacity-50"
         >
-          {loading ? "Menyiapkan..." : "1. LOAD DOM"}
+          {loading ? "Menyiapkan..." : "LOAD DOM"}
         </button>
       </div>
 
