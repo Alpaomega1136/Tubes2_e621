@@ -5,6 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Diperlukan oleh HtmlProviderService untuk fetch HTML dari URL
+builder.Services.AddHttpClient();
+
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowViteFrontend", policy => {
         policy.WithOrigins("http://localhost:5173")
@@ -14,7 +17,7 @@ builder.Services.AddCors(options => {
 });
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => 
+    .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.MaxDepth = 256;
     });

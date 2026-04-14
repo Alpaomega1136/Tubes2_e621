@@ -77,7 +77,7 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
           disabled={loading}
           className="shrink-0 bg-surface hover:bg-borderDrop border border-borderDrop px-5 py-2.5 md:py-2 rounded-lg text-calmBlue-light text-xs font-bold transition-colors disabled:opacity-50"
         >
-          {loading ? "Menyiapkan..." : "1. LOAD DOM"}
+          {loading ? "Loading..." : "LOAD DOM"}
         </button>
       </div>
 
@@ -106,7 +106,7 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
         {/* CSS Selector Input */}
         <div className="flex-1">
           <input
-            type="text" placeholder="Target CSS (misal: div > p.class)" value={selector} onChange={(e) => setSelector(e.target.value)}
+            type="text" placeholder="Target CSS (e.g. div > p.class)" value={selector} onChange={(e) => setSelector(e.target.value)}
             className="w-full bg-surface/50 border border-borderDrop rounded-lg px-3 py-2 text-sm text-neonGreen-light focus:outline-none focus:border-neonGreen focus:ring-1 focus:ring-neonGreen/50 font-mono"
           />
         </div>
@@ -117,7 +117,7 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
             value={resultMode} onChange={(e) => setResultMode(e.target.value)}
             className="bg-surface/50 border border-borderDrop rounded-lg px-2 py-2 text-xs text-gray-300 focus:outline-none focus:border-gray-500 cursor-pointer"
           >
-            <option value="all">Semua Hasil</option>
+            <option value="all">All Results</option>
             <option value="topn">Top-N</option>
           </select>
           <AnimatePresence>
@@ -151,13 +151,13 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
           <div className={`relative w-8 h-4 rounded-full transition-colors duration-300 ${isAnimationEnabled ? 'bg-calmBlue' : 'bg-gray-600'}`}>
             <motion.div animate={{ x: isAnimationEnabled ? 16 : 2 }} className="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm" transition={{ type: "spring", stiffness: 500, damping: 30 }} />
           </div>
-          <span className="text-xs font-bold text-gray-300 select-none">Animasi Traversal</span>
+          <span className="text-xs font-bold text-gray-300 select-none">Animation</span>
         </div>
 
         <AnimatePresence>
           {isAnimationEnabled && (
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="flex-1 flex items-center gap-3 w-full">
-              <span className="text-[10px] text-gray-500 font-bold uppercase shrink-0 hidden sm:block">Kecepatan:</span>
+              <span className="text-[10px] text-gray-500 font-bold uppercase shrink-0 hidden sm:block">Speed:</span>
               <input
                 type="range" min="50" max="1500" step="50" value={animationSpeed} onChange={(e) => setAnimationSpeed(Number(e.target.value))}
                 className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-calmBlue"

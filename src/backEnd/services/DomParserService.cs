@@ -19,7 +19,7 @@ namespace backEnd.services {
             return root;
         }
 
-        private DomNode ConvertToDomNode(HtmlNode htmlNode, DomNode parent, int depth) {
+        private DomNode ConvertToDomNode(HtmlNode htmlNode, DomNode? parent, int depth) {
             var domNode = new DomNode
             {
                 Id = $"node-{++nodeCounter_}",
