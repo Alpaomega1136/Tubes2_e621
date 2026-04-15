@@ -6,6 +6,29 @@ using backEnd.models;
 
 namespace backEnd.algorithms {
     public static class BfsAlgorithm {
+
+        public static void ExecuteNormal(DomNode root, Action<DomNode> visitAction, int? maxResults, ConcurrentBag<DomNode> matches) {
+            if (root == null) return;
+
+            var queue = new Queue<DomNode>();
+            queue.Enqueue(root);
+
+            while (queue.Count > 0) {
+                if (maxResults.HasValue && matches.Count >= maxResults.Value)
+                    break;
+
+                var node = queue.Dequeue();
+
+                visitAction(node);
+
+                if (node.Children != null) {
+                    foreach (var child in node.Children) {
+                        queue.Enqueue(child);
+                    }
+                }
+            }
+        }
+
         public static void ExecuteParallel(DomNode root, Action<DomNode> visitAction, int? maxResults, ConcurrentBag<DomNode> matches) {
             var queue = new ConcurrentQueue<DomNode>();
             queue.Enqueue(root);
@@ -30,7 +53,6 @@ namespace backEnd.algorithms {
 
                     visitAction(node);
 
-                    // Cek ulang setelah visitAction
                     if (maxResults.HasValue && matches.Count >= maxResults.Value)
                         state.Stop();
 

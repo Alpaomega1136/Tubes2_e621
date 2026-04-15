@@ -39,7 +39,7 @@ namespace backEnd.controllers {
 
                 var response = new ScrapeResponse {
                     Tree = tree,
-                    MaxDepth = GetMaxDepth(tree),   // FIX: was tree.Depth (always 0)
+                    MaxDepth = GetMaxDepth(tree),
                     TotalNodes = CountNodes(tree)
                 };
 
@@ -56,7 +56,7 @@ namespace backEnd.controllers {
                 var htmlContent = await htmlProvider_.GetHtmlAsync(req.Url, req.Html);
                 var tree = parserService_.ParseAndPrepareLCA(htmlContent);
 
-                var result = traversalService_.Traverse(tree, req.Selector ?? "", req.Algorithm ?? "bfs", req.MaxResults);
+                var result = traversalService_.Traverse(tree, req.Selector ?? "", req.Algorithm ?? "bfs", req.isParallel ?? true, req.MaxResults);
                 return Ok(result);
             }
             catch (System.Exception ex) {

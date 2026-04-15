@@ -50,7 +50,7 @@ namespace backEnd.services
                 }
                 else
                 {
-                    // BfsAlgorithm.ExecuteNormal(root, LogVisit, maxResults, matchedNodes);
+                    BfsAlgorithm.ExecuteNormal(root, LogVisit, maxResults, matchedNodes);
                 }
             }
             else
