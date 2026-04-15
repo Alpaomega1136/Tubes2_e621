@@ -10,7 +10,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowViteFrontend", policy => {
-        policy.WithOrigins("http://localhost:5173")
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
