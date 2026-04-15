@@ -16,7 +16,7 @@ export async function scrapeHtml({ url, html }) {
 }
 
 // Algoritma pencarian (BFS/DFS) berdasarkan CSS selector
-export async function traverseDom({ url, html, selector, algorithm, maxResults }) {
+export async function traverseDom({ url, html, selector, algorithm, isParallel, maxResults }) {
   const res = await fetch(`${BASE_URL}/api/traverse`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -25,6 +25,7 @@ export async function traverseDom({ url, html, selector, algorithm, maxResults }
       html: html || null,
       selector,
       algorithm,
+      isParallel,
       maxResults: maxResults || null,
     }),
   });

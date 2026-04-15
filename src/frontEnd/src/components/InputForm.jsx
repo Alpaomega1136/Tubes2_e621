@@ -6,6 +6,7 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
   const [url, setUrl] = useState("");
   const [html, setHtml] = useState("");
   const [algorithm, setAlgorithm] = useState("bfs");
+  const [isParallel, setParallel] = useState(false);
   const [selector, setSelector] = useState("");
   const [resultMode, setResultMode] = useState("all");
   const [topN, setTopN] = useState(5);
@@ -23,6 +24,7 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
       ...getSource(),
       selector,
       algorithm,
+      isParallel,
       maxResults: resultMode === "topn" ? topN : null,
     });
   };
@@ -101,6 +103,24 @@ export default function InputForm({ onScrape, onTraverse, loading, isAnimationEn
               {alg}
             </button>
           ))}
+        </div>
+        
+        {/* Toggle isParallel (Switch Style) */}
+        <div
+          className="flex items-center gap-2.5 cursor-pointer shrink-0 bg-background/80 px-3 py-1.5 rounded-lg border border-borderDrop/50 hover:bg-surface/50 transition-colors"
+          onClick={() => setParallel(!isParallel)}
+          title="Enable Parallel Execution"
+        >
+          <div className={`relative w-8 h-4 rounded-full transition-colors duration-300 ${isParallel ? 'bg-purple-600' : 'bg-gray-600'}`}>
+            <motion.div 
+              animate={{ x: isParallel ? 16 : 2 }} 
+              className="absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm" 
+              transition={{ type: "spring", stiffness: 500, damping: 30 }} 
+            />
+          </div>
+          <span className={`text-xs font-bold uppercase select-none transition-colors ${isParallel ? "text-purple-400" : "text-gray-400"}`}>
+            Parallel
+          </span>
         </div>
 
         {/* CSS Selector Input */}
