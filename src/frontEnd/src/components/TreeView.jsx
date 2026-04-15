@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0 }) {
+function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, isFocus }) {
   const [expanded, setExpanded] = useState(depth < 2);
   const hasChildren = node.children && node.children.length > 0;
 
@@ -16,10 +16,12 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0 })
       setExpanded(true);
       if (nodeRef.current) {
         // Animasi auto-scroll canggih (Horizontal dan Vertikal)
-        nodeRef.current.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        if(isFocus){
+          nodeRef.current.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        }
       }
     }
-  }, [isVisiting]);
+  }, [isVisiting,isFocus]);
 
   return (
     <div className="flex flex-row items-center relative group/node">
@@ -99,6 +101,7 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0 })
                   traversalPath={traversalPath}
                   currentNodeId={currentNodeId}
                   depth={depth + 1}
+                  isFocus={isFocus}
                 />
               </div>
             ))}
@@ -109,7 +112,7 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0 })
   );
 }
 
-export default function TreeView({ tree, maxDepth, totalNodes, matchedIds, traversalPath, currentNodeId, loading }) {
+export default function TreeView({tree, maxDepth, totalNodes, matchedIds, traversalPath, currentNodeId, loading, isFocus}) {
   if (loading) return <div className="glass-panel rounded-2xl flex-1 flex flex-col items-center justify-center min-h-[400px] border border-borderDrop/50 text-gray-500 space-y-4">Membangun Diagram Pohon...</div>;
   if (!tree) return <div className="glass-panel rounded-2xl flex-1 flex flex-col items-center justify-center min-h-[400px] p-8 border border-borderDrop/50 text-gray-500 text-center">Data Pohon Belum Dimuat</div>;
 
@@ -152,6 +155,7 @@ export default function TreeView({ tree, maxDepth, totalNodes, matchedIds, trave
             matchedIds={matchedIds}
             traversalPath={traversalPath}
             currentNodeId={currentNodeId}
+            isFocus={isFocus}
           />
         </div>
       </div>

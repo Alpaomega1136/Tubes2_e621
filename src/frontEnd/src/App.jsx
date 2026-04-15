@@ -13,6 +13,7 @@ function App() {
   const [maxDepth, setMaxDepth] = useState(0);
   const [totalNodes, setTotalNodes] = useState(0);
   const [traversalResult, setTraversalResult] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
 
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   const [animationSpeed, setAnimationSpeed] = useState(400); // ms per step
@@ -117,6 +118,8 @@ function App() {
             setIsAnimationEnabled={setIsAnimationEnabled}
             animationSpeed={animationSpeed}
             setAnimationSpeed={setAnimationSpeed}
+            isFocus={isFocus}
+            setIsFocus={setIsFocus}
           />
         </motion.div>
 
@@ -130,6 +133,7 @@ function App() {
             traversalPath={animatedPath}
             currentNodeId={currentNodeId}
             loading={loading}
+            isFocus={isFocus}
           />
         </motion.div>
 

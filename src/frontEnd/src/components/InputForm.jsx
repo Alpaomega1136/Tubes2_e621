@@ -2,14 +2,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function InputForm({
-  onScrape, onTraverse, loading, isAnimationEnabled, setIsAnimationEnabled, animationSpeed, setAnimationSpeed
+  onScrape, onTraverse, loading, isAnimationEnabled, setIsAnimationEnabled, animationSpeed, setAnimationSpeed, isFocus, setIsFocus
 }) {
   const [inputMode, setInputMode] = useState("url");
   const [url, setUrl] = useState("");
   const [html, setHtml] = useState("");
   const [algorithm, setAlgorithm] = useState("bfs");
   const [isParallel, setParallel] = useState(false);
-  const [isFocus, setFocus] = useState(false);
   const [selector, setSelector] = useState("");
   const [resultMode, setResultMode] = useState("all");
   const [topN, setTopN] = useState(5);
@@ -186,7 +185,7 @@ export default function InputForm({
               className="flex-1 flex items-center gap-3 w-full bg-background/30 p-2 rounded-lg border border-white/5"
             >
               <button
-                type="button" role="switch" aria-checked={isFocus} onClick={() => setFocus(!isFocus)}
+                type="button" role="switch" aria-checked={isFocus} onClick={() => setIsFocus(!isFocus)}
                 className="flex items-center gap-2 shrink-0 bg-white/5 px-2.5 py-1 rounded-md hover:bg-white/10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-calmBlue"
               >
                 <div className={`relative w-6 h-3 rounded-full transition-colors duration-300 ${isFocus ? "bg-calmBlue" : "bg-gray-600"}`}>
