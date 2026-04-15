@@ -1,0 +1,14 @@
+# Build outputs (otomatis di-generate, berisi path absolut tiap komputer)
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio artifacts
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Publish output
+[Pp]ublish/
+[Rr]elease/

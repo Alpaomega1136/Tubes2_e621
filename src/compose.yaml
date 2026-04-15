@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ./backEnd
+    container_name: backend
+    ports:
+      - "5027:8080"
+
+  frontend:
+    build:
+      context: ./frontEnd
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
