@@ -153,10 +153,14 @@ Tubes2_e621/
         └── vite.config.js
 ```
 
+### Link Deployment
+
+[Micosoft Azzure (soon)]()
+
 ### Author
 
-| Nama                                 | NIM      |
-| ------------------------------------ | -------- |
-| **An-Dafa Anza Avansyah**            | 13524038 |
-| **Muhammad Haris Putra Sulastianto** | 13524053 |
-| **Raymond Jonathan Dwi Putra J**     | 13524059 |
+- 13524038 An-Dafa Anza Avansyah [(about me)](https://github.com/An-Dafa)
+- 13524053 Muhammad Haris Putra Sulastianto [(about me)](https://mhps-null.vercel.app/)
+- 13524059 Raymond Jonathan Dwi Putra J [(about me)](https://github.com/Alpaomega1136)
+
+Teknik Informatika, Institut Teknologi Bandung — 2026
