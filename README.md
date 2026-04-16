@@ -4,7 +4,7 @@
 
 `Penerapan Algoritma BFS dan DFS dalam Mekanisme Penelusuran CSS pada pohon Document Object Model`
 
-<!-- <p align="center"> <img src="doc/preview.png" width="60%"/> </p> -->
+<p align="center"> <img src="doc/preview.png" width="60%"/> </p>
 
 ---
 
@@ -38,47 +38,63 @@ BFS cocok digunakan untuk menemukan elemen yang **paling dekat** dengan akar kar
 
 ### Depth-First Search (DFS)
 
-DFS adalah algoritma penelusuran graf yang menjelajahi simpul-simpul secara **mendalam cabang demi cabang**. Dimulai dari simpul akar, DFS menelusuri satu cabang hingga mencapai simpul daun (_leaf_) sebelum melakukan _backtrack_ dan menelusuri cabang lainnya. Struktur data utama yang digunakan adalah **tumpukan (stack)**, baik secara eksplisit maupun melalui rekursi.
+DFS adalah algoritma penelusuran graf yang menjelajahi simpul-simpul secara **mendalam cabang demi cabang**. Dimulai dari simpul akar, DFS menelusuri satu cabang hingga mencapai simpul daun (_leaf_) sebelum melakukan _backtrack_ dan menelusuri cabang lainnya. Struktur data utama yang digunakan adalah **stack**, baik secara eksplisit maupun melalui rekursi.
 
 Dalam proyek ini, DFS diimplementasikan pada file `src/backEnd/algorithms/DfsAlgorithm.cs`. Alur kerjanya:
 
-1. Simpul akar dimasukkan ke dalam tumpukan.
-2. Simpul teratas di-_pop_ dan diproses, kemudian anak-anaknya dimasukkan ke dalam tumpukan.
-3. Proses berulang hingga tumpukan kosong atau jumlah hasil yang diminta telah tercapai.
+1. Simpul akar dimasukkan ke dalam stack.
+2. Simpul teratas di-_pop_ dan diproses, kemudian anak-anaknya dimasukkan ke dalam stack.
+3. Proses berulang hingga stack kosong atau jumlah hasil yang diminta telah tercapai.
 
 DFS cocok digunakan untuk menelusuri struktur pohon yang dalam atau ketika elemen yang dicari berada di **cabang-cabang terdalam** dari pohon DOM.
 
-### Perbandingan
-
-| Aspek             | BFS                                   | DFS                                      |
-| ----------------- | ------------------------------------- | ---------------------------------------- |
-| Strategi          | Lapis demi lapis (level-order)        | Kedalaman demi kedalaman (depth-first)   |
-| Struktur Data     | Queue (Antrian)                       | Stack (Tumpukan)                         |
-| Keunggulan        | Menemukan elemen terdekat dari akar   | Efisien untuk pohon yang dalam           |
-| Penggunaan Memori | Lebih besar (menyimpan seluruh level) | Lebih kecil (hanya menyimpan satu jalur) |
-
 ## Requirement
 
-| Komponen                      | Keterangan / Versi Minimum                                 |
-| ----------------------------- | ---------------------------------------------------------- |
-| **Node.js & NPM**             | v18.0 atau yang lebih baru                                 |
-| **HTML, CSS, dan JavaScript** | ES6+ Standard                                              |
-| **React**                     | v18.0+ (Menggunakan Vite)                                  |
-| **C#**                        | C# 12.0                                                    |
-| **.NET SDK**                  | versi 8.0 atau 9.0 (Dapat disesuaikan di `backEnd.csproj`) |
-| **Sistem Operasi**            | Windows / Linux (WSL)                                      |
+| Komponen                      | Keterangan / Versi Minimum                       |
+| ----------------------------- | ------------------------------------------------ |
+| **Node.js & NPM**             | v18.0 atau yang lebih baru                       |
+| **HTML, CSS, dan JavaScript** | ES6+ Standard                                    |
+| **React**                     | v18.0+ (Menggunakan Vite)                        |
+| **C#**                        | C# 12.0                                          |
+| **.NET SDK**                  | versi 10.0 (Sesuaikan versi di `backEnd.csproj`) |
+| **Sistem Operasi**            | Windows / Linux (WSL)                            |
+| **Docker** (Opsional)         | v20.0+ (Sudah diuji di 29.4.0)                   |
 
-## Instalasi dan Build
+## Quick Start (Docker)
 
-### 1. Clone Repository
-
-Unduh salinan berkas kode aplikasi _Tubes2_ kelompok kami melalui terminal:
+Cek instalasi:
 
 ```bash
-git clone https://github.com/Alpaomega1136/Tubes2_e621.git
+docker --version
+docker compose version
 ```
 
-### 2. Menjalankan Front End Program (React UI)
+### 1. Menjalankan Aplikasi
+
+Dari root project (`/Tubes2_e621`), jalankan:
+
+```bash
+docker compose up --build
+```
+
+### 2. Akses Aplikasi
+
+Setelah berhasil dijalankan:
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5027/swagger
+
+atau dengan IP Network yang tertera pada terminal
+
+### 3. Menghentikan Aplikasi
+
+```bash
+docker compose down
+```
+
+## Instalasi dan Build (manual)
+
+### 1. Menjalankan Front End Program (React UI)
 
 Dari direktori akar (`/Tubes2_e621`), masuk dan nyalakan antarmuka visual penelusuran.
 
@@ -93,7 +109,7 @@ npm install
 npm run dev
 ```
 
-### 3. Menjalankan Back End Program (API C#)
+### 2. Menjalankan Back End Program (API C#)
 
 Buka layar Terminal baru. Dari direktori akar (`/Tubes2_e621`), masuk dan nyalakan _server backend_ penelusur algoritma pohon DOM.
 
@@ -103,10 +119,9 @@ cd src/backEnd
 
 # Mengecek kompatibilitas versi .NET di terminal Anda
 dotnet --version
-# Catatan: Apabila versi yang terinstall berbeda/lebih tua dari kerangka kerja
-# di spesifikasi tugas, sesuaikan `<TargetFramework>` pada file `backEnd.csproj` secara manual.
+# Sesuaikan versi jika tidak sesuai
 
-# Jalankan server API (Otomatis berjalan pada Port 5027)
+# Jalankan server API (Port 5027)
 dotnet run
 ```
 
@@ -118,11 +133,13 @@ Tubes2_e621/
 ├── doc/                           # Berkas Penyajian Laporan & Dokumen Tugas
 │   └── ...                        # Laporan spesifikasi atau PDF pendukung
 └── src/
+    ├── compose.yaml               # Docker compose
     ├── backEnd/                   # Source Code C# API Framework Backend
     │   ├── controllers/
     │   ├── models/
     │   ├── services/
     │   ├── backEnd.csproj
+    │   ├── Dockerfile             # File docker
     │   └── Program.cs             # Bootstrapper Pintu Masuk Lokal
     │
     └── frontEnd/                  # Source Code React Aplikasi Antarmuka Visual (Vite)
@@ -132,6 +149,7 @@ Tubes2_e621/
         │   ├── App.jsx
         │   └── App.css
         ├── package.json
+    │   ├── Dockerfile
         └── vite.config.js
 ```
 
