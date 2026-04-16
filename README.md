@@ -149,7 +149,7 @@ Tubes2_e621/
         │   ├── App.jsx
         │   └── App.css
         ├── package.json
-    │   ├── Dockerfile
+        ├── Dockerfile
         └── vite.config.js
 ```
 
