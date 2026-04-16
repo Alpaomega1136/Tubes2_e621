@@ -13,7 +13,8 @@
 - [Deskripsi Singkat](#deskripsi-singkat)
 - [Algoritma BFS dan DFS](#algoritma-bfs-dan-dfs)
 - [Requirement](#requirement)
-- [Instalasi dan Build](#instalasi-dan-build)
+- [Quick Start](#quick-start-docker)
+- [Instalasi dan Build](#instalasi-dan-build-manual)
 - [Struktur Proyek](#struktur-proyek)
 - [Author](#author)
 
