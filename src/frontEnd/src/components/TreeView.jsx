@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, isFocus }) {
+function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, isFocus, expandAll }) {
   const [expanded, setExpanded] = useState(depth < 2);
   const hasChildren = node.children && node.children.length > 0;
 
@@ -22,6 +22,18 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, i
       }
     }
   }, [isVisiting,isFocus]);
+
+  useEffect(() => {
+    if (traversalPath?.length === 0) {
+      setExpanded(depth < 2);
+    }
+  }, [traversalPath?.length, depth]);
+
+  useEffect(() => {
+    if (expandAll) {
+      setExpanded(true);
+    }
+  }, [expandAll]);
 
   return (
     <div className="flex flex-row items-center relative group/node">
@@ -102,6 +114,7 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, i
                   currentNodeId={currentNodeId}
                   depth={depth + 1}
                   isFocus={isFocus}
+                  expandAll={expandAll}
                 />
               </div>
             ))}
@@ -112,7 +125,7 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, i
   );
 }
 
-export default function TreeView({tree, maxDepth, totalNodes, matchedIds, traversalPath, currentNodeId, loading, isFocus}) {
+export default function TreeView({tree, maxDepth, totalNodes, matchedIds, traversalPath, currentNodeId, loading, isFocus, expandAll}) {
   if (loading) return <div className="glass-panel rounded-2xl flex-1 flex flex-col items-center justify-center min-h-[400px] border border-borderDrop/50 text-gray-500 space-y-4">Membangun Diagram Pohon...</div>;
   if (!tree) return <div className="glass-panel rounded-2xl flex-1 flex flex-col items-center justify-center min-h-[400px] p-8 border border-borderDrop/50 text-gray-500 text-center">Data Pohon Belum Dimuat</div>;
 
@@ -156,6 +169,7 @@ export default function TreeView({tree, maxDepth, totalNodes, matchedIds, traver
             traversalPath={traversalPath}
             currentNodeId={currentNodeId}
             isFocus={isFocus}
+            expandAll={expandAll}
           />
         </div>
       </div>

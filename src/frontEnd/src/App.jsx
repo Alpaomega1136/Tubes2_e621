@@ -134,6 +134,7 @@ function App() {
             currentNodeId={currentNodeId}
             loading={loading}
             isFocus={isFocus}
+            expandAll={!isAnimationEnabled && traversalResult !== null}
           />
         </motion.div>
 
