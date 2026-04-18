@@ -1,0 +1,2104 @@
+\documentclass[12pt]{article}
+
+% ========================
+% PACKAGES
+% ========================
+\usepackage{graphicx}
+\usepackage{framed}
+\usepackage{alltt}
+\usepackage{amssymb}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{appendix}
+\usepackage{xurl}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
+
+% ========================
+% HEADER & FOOTER
+% ========================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{IF2211 - Strategi Algoritma}
+\fancyhead[R]{Tugas Besar 2}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\contentsname}{Daftar Isi}
+\renewcommand{\refname}{Daftar Pustaka}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codeblue}{rgb}{0.0, 0.2, 0.6}
+
+\lstdefinestyle{cppstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    numbers=left,
+    tabsize=4,
+    language=C++
+}
+
+\lstset{style=cppstyle}
+
+% ========================
+% TITLE
+% ========================
+\title{Laporan Tugas Besar 2 IF2211}
+\author{Kelompok [Nama Kelompok]}
+\date{\today}
+
+\begin{document}
+\setlength{\parskip}{6pt}
+
+% ========================
+% COVER PAGE
+% ========================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vspace*{1cm}
+{\Huge \bfseries Tugas Besar 2 IF2211 Strategi Algoritma \par}
+
+\vspace{1cm}
+{\Large IF2211 - Strategi Algoritma \par}
+\vspace{0.5cm}
+{\normalsize Pemanfaatan Algoritma BFS dan DFS dalam Mekanisme Penelusuran CSS pada Pohon DOM \par}
+\vspace{0.25cm}
+{\small Semester II tahun 2025/2026 \par}
+
+\vfill
+\includegraphics[width=0.6\textwidth]{Cover.png}
+\vspace{1cm}
+
+\vfill
+{\normalsize \textbf{Disusun oleh:} \par}
+\vspace{0.3cm}
+\begin{tabular}{ll}
+13524038 & An-Dafa Anza Avansyah \\
+13524053 & Muhammad Haris Putra Sulastianto \\
+13524059 & Raymond Jonathan Dwi Putra J \\
+\end{tabular}
+
+\vfill
+{\large
+Program Studi Teknik Informatika \par
+\vspace{0.3cm}
+Sekolah Teknik Elektro dan Informatika \par
+\vspace{0.3cm}
+Institut Teknologi Bandung \par
+\vspace{0.3cm}
+2026 \par
+}
+
+\end{titlepage}
+
+% ========================
+% BAB 1
+% ========================
+\begin{center}
+    \Large\textbf{BAB 1} \\
+    \vspace{0.2cm}
+    \Large\textbf{DESKRIPSI TUGAS}
+\end{center}
+\addcontentsline{toc}{section}{BAB 1: Deskripsi Tugas}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{gambar_1.png} 
+    \caption{Struktur Pohon DOM}
+    \vspace{0.2cm}
+    \url{https://www.geeksforgeeks.org/java/what-is-document-object-in-java-dom/}
+\end{figure}
+
+Document Object Model (DOM) merupakan representasi terstruktur dari dokumen HTML dalam bentuk \textit{tree} yang memungkinkan setiap elemen pada halaman web diakses, dimodifikasi, dan dimanipulasi oleh program. Struktur ini merepresentasikan hubungan antar elemen HTML seperti \textit{parent}, \textit{child}, dan \textit{sibling} sehingga memudahkan pengolahan dokumen secara terprogram.
+
+Struktur sebuah file HTML pada umumnya meliputi elemen \textit{root} \verb|<html>| yang berisi dua bagian utama yaitu \verb|<head>| dan \verb|<body>|. Bagian \verb|<head>| berisi metadata seperti judul halaman, \textit{link stylesheet}, dan \textit{script}, sedangkan \verb|<body>| berisi konten utama halaman seperti teks, gambar, tombol, dan elemen HTML lainnya yang ditampilkan kepada pengguna.
+
+Sebuah website menampilkan sebuah DOM melalui sebuah file bernama Cascading Style Sheets (CSS) yang bertujuan mendeklarasikan visualisasi elemen-elemen pada pohon. Deklarasi visualisasi ditempelkan pada elemen-elemen yang berkaitan melalui CSS Selector.
+
+Pada Tugas Besar 2 Strategi Algoritma ini, mahasiswa diminta untuk menelusuri dan mencari elemen pada struktur DOM berdasarkan CSS Selector tertentu dengan menggunakan algoritma penelusuran graf yaitu \textit{Breadth First Search} (BFS) dan \textit{Depth First Search} (DFS). Algoritma tersebut digunakan untuk menjelajahi struktur pohon DOM guna menemukan elemen yang sesuai dengan \textit{selector} yang diberikan.
+
+Komponen-komponen penting yang terdapat pada tugas besar ini antara lain:
+
+\begin{enumerate}
+    \item \textbf{Tags}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{gambar_2.png}
+        \caption{Struktur Syntax HTML}
+        \vspace{0.2cm}
+        \url{https://tutorial.techaltum.com/htmlTags.html}
+    \end{figure}
+    Tag pada HTML merupakan penanda (\textit{markup}) yang digunakan untuk mendefinisikan struktur dan jenis elemen dalam sebuah dokumen HTML. Tag memberi tahu \textit{browser} bagaimana suatu bagian konten harus ditafsirkan dan ditampilkan pada halaman web. Secara umum, tag HTML ditulis menggunakan tanda kurung sudut (\verb|< >|). Sebagian besar elemen HTML memiliki pasangan tag pembuka dan tag penutup. Tag pembuka menandai awal suatu elemen, sedangkan tag penutup menandai akhir elemen tersebut. Tag penutup ditulis dengan menambahkan tanda garis miring \verb|/| sebelum nama tag. Terdapat beberapa jenis tag HTML yang \textit{self-closing}. Dalam struktur DOM, setiap tag HTML direpresentasikan sebagai \textit{node} pada pohon DOM. Hubungan antar tag membentuk struktur hierarki seperti \textit{parent}, \textit{child}, dan \textit{sibling}. Struktur inilah yang memungkinkan dokumen HTML diproses sebagai sebuah pohon ketika dilakukan penelusuran menggunakan algoritma seperti BFS atau DFS.
+
+    \item \textbf{CSS Selector}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\textwidth]{gambar_3.png}
+        \caption{Visualisasi CSS Selector}
+        \vspace{0.2cm}
+        \url{https://www.reddit.com/r/webdev/comments/ur6v5m/css_selectors_visually_explained/}
+    \end{figure}
+    CSS \textit{Selector} adalah mekanisme pada CSS untuk memilih elemen HTML tertentu pada struktur DOM agar dapat diberikan aturan \textit{style}. Dengan \textit{selector}, kita dapat menentukan elemen mana yang akan dikenai aturan visual seperti warna, ukuran, atau tata letak. Beberapa \textit{selector} dasar yang umum digunakan adalah sebagai berikut: \textbf{Tag Selector} memilih elemen berdasarkan nama tag HTML (contoh: \verb|p| memilih semua elemen \verb|<p>|); \textbf{Class Selector} memilih elemen yang memiliki atribut \textit{class} tertentu, ditulis dengan tanda titik (\verb|.|) (contoh: \verb|.box|); \textbf{ID Selector} memilih elemen dengan atribut \textit{id} tertentu, ditulis dengan tanda pagar (\verb|#|) (contoh: \verb|#header|); dan \textbf{Universal Selector} memilih semua elemen HTML (contoh: \verb|*|). \textit{Combinator} merupakan cara untuk menggabungkan beberapa jenis \textit{selector} dalam penentuan elemen yang akan terpengaruh, dan terdiri dari: \textit{Child Combinator} (\verb|>|), \textit{Descendent Combinator} (\verb| |), \textit{Adjacent Sibling Combinator} (\verb|+|), dan \textit{General Sibling Combinator} (\verb|~|).
+
+    \item \textbf{HTML Parsing}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{gambar_4.png}
+        \caption{Proses Parsing Pohon HTML}
+        \vspace{0.2cm}
+        \url{https://stackoverflow.com/questions/3150293/how-does-a-parser-for-example-html-work}
+    \end{figure}
+    HTML \textit{Parsing} adalah proses membaca dokumen HTML dan mengubahnya menjadi struktur data pohon (\textit{tree}) yang merepresentasikan hubungan antar elemen HTML. Pada proses ini, \textit{parser} memproses dokumen HTML secara berurutan, mengenali tag pembuka dan tag penutup, kemudian menyusunnya ke dalam struktur hierarki. Setiap tag HTML direpresentasikan sebagai \textit{node} pada pohon. Tag yang berada di dalam tag lain akan menjadi \textit{child node}, sedangkan tag yang membungkusnya menjadi \textit{parent node}. \textit{Node} paling atas pada struktur ini disebut \textit{root}, yang umumnya merupakan elemen \verb|<html>|. Dari \textit{node root} tersebut, elemen-elemen lain seperti \verb|<head>| dan \verb|<body>| akan menjadi cabang yang membentuk struktur pohon DOM. Hasil dari proses \textit{parsing} adalah \textit{DOM Tree}, yaitu representasi pohon dari dokumen HTML yang memungkinkan elemen-elemen pada halaman web ditelusuri, diakses, dan dimanipulasi secara terstruktur. Struktur pohon ini kemudian dapat digunakan dalam proses penelusuran elemen, misalnya dengan menggunakan algoritma \textit{Breadth First Search} (BFS) atau \textit{Depth First Search} (DFS).
+\end{enumerate}
+
+% ========================
+% BAB 2
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 2} \\
+    \vspace{0.2cm}
+    \Large\textbf{LANDASAN TEORI}
+\end{center}
+\addcontentsline{toc}{section}{BAB 2: Landasan Teori}
+\setcounter{section}{2}
+\setcounter{subsection}{0}
+
+\subsection{Document Object Model (DOM)}
+
+Document Object Model (DOM) adalah antarmuka pemrograman untuk dokumen web. DOM merepresentasikan halaman sehingga program dapat mengubah struktur, gaya, dan konten dokumen, seperti HTML yang merepresentasikan halaman web. DOM merepresentasikan dokumen sebagai \textit{node} dan objek sehingga bahasa pemrograman dapat berinteraksi dengan halaman tersebut.
+
+Halaman web adalah dokumen yang dapat ditampilkan di jendela \textit{browser} atau sebagai kode sumber HTML. Dengan DOM, elemen HTML seperti paragraf, gambar, atau tombol diubah menjadi objek JavaScript yang dapat diakses dan dimodifikasi. DOM ini sebagai 'jembatan' antara kode JavaScript dan tampilan halaman web dengan menyediakan model dokumen yang memungkinkan program mengubah struktur, konten, dan gaya halaman tanpa perlu me-\textit{refresh} seluruh halaman.
+
+DOM dibangun menggunakan beberapa API yang bekerja bersama-sama. DOM inti mendefinisikan entitas yang menggambarkan setiap dokumen dan objek di dalamnya. Ini diperluas sesuai kebutuhan oleh API lain yang menambahkan fitur dan kemampuan baru ke DOM. Misalnya, API HTML DOM menambahkan dukungan untuk merepresentasikan dokumen HTML ke DOM inti, dan API SVG menambahkan dukungan untuk merepresentasikan dokumen SVG.
+
+Pohon DOM adalah struktur pohon yang simpul-simpulnya mewakili isi dokumen HTML atau XML. Setiap dokumen HTML atau XML memiliki representasi pohon DOM. Misalnya, perhatikan dokumen berikut:
+\begin{lstlisting}[language=HTML, frame=single, backgroundcolor=\color{backcolour}, basicstyle=\ttfamily\footnotesize, title=Struktur HTML]
+<html lang="en">
+  <head>
+    <title>My Document</title>
+  </head>
+  <body>
+    <h1>Header</h1>
+    <p>Paragraph</p>
+  </body>
+</html>
+\end{lstlisting}
+Struktur DOM-nya terlihat seperti ini:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Pohon_DOM.jpg}
+    \caption{Struktur DOM Hasil Parsing}
+    \vspace{0.2cm}
+    \url{https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model}
+\end{figure}
+Ketika peramban web menguraikan dokumen HTML, ia membangun pohon DOM dan kemudian menggunakannya untuk menampilkan dokumen tersebut.
+
+\subsection{CSS Selector}
+
+Cascading Style Sheets (CSS) \textit{Selector} adalah sebuah mekanisme berupa pola string yang digunakan untuk mengidentifikasi, memilih, dan mencocokkan satu atau sekumpulan elemen (simpul/\textit{node}) di dalam struktur pohon Document Object Model (DOM). Dalam konteks pengembangan web, \textit{selector} umumnya digunakan untuk menerapkan aturan visual (\textit{styling}) pada elemen HTML tertentu. Namun, dalam konteks komputasi dan \textit{web scraping}, CSS \textit{Selector} berfungsi sebagai kueri pencarian (\textit{search query}) yang sangat kuat untuk mengekstraksi data spesifik dari sebuah graf atau pohon dokumen.
+
+Secara konseptual, pencocokan CSS \textit{Selector} beroperasi dengan cara mengevaluasi atribut dari setiap simpul pada pohon DOM dan memeriksa hubungan struktural antar simpul tersebut. CSS \textit{Selector} dapat dibagi menjadi beberapa kategori dasar berdasarkan spesifisitas dan cara kerjanya, antara lain:
+
+\begin{itemize}
+    \item \textbf{Universal Selector (\verb|*|):} Memilih semua elemen di dalam dokumen DOM tanpa terkecuali. Ini setara dengan mengunjungi seluruh simpul dalam pohon tanpa memberikan filter kondisi pencocokan.
+    
+    \item \textbf{Tag/Type Selector:} Memilih elemen berdasarkan nama tag HTML aslinya. Misalnya, \textit{selector} \verb|div| akan mencocokkan semua simpul yang merupakan instansiasi dari tag \verb|<div>|.
+    
+    \item \textbf{Class Selector (\verb|.|):} Memilih elemen yang memiliki atribut kelas tertentu. Satu elemen HTML dapat memiliki beberapa kelas, dan banyak elemen dapat berbagi kelas yang sama. Penulisannya diawali dengan tanda titik, contohnya \verb|.container| akan mencocokkan elemen seperti \verb|<div class="container">|.
+    
+    \item \textbf{ID Selector (\verb|#|):} Memilih elemen berdasarkan atribut \textit{identifier} uniknya. Berdasarkan standar HTML, ID seharusnya bersifat unik di seluruh dokumen (hanya ada satu elemen per ID). Penulisannya diawali dengan tanda pagar, contohnya \verb|#header| akan mencocokkan \verb|<nav id="header">|.
+    
+    \item \textbf{Attribute Selector (\verb|[attr=value]|):} Memilih elemen berdasarkan keberadaan atribut tertentu atau nilai spesifik dari atribut tersebut, seperti \verb|[href]| atau \verb|[type="submit"]|.
+\end{itemize}
+
+Selain \textit{selector} tunggal, CSS mendukung penggunaan \textbf{Kombinator (\textit{Combinator})} untuk mendefinisikan hubungan spasial dan hierarkis antar elemen di dalam pohon DOM. Hal ini sangat relevan dengan algoritma penelusuran graf (seperti BFS dan DFS) karena kombinator mendikte jalur traversal yang sah:
+
+\begin{enumerate}
+    \item \textbf{Descendant Combinator (\textit{Spasi}):} Dinyatakan dengan karakter spasi (contoh: \verb|div p|). Kombinator ini memilih semua elemen \verb|<p>| yang merupakan keturunan (baik \textit{child} langsung maupun keturunan pada kedalaman tingkat berapa pun) dari elemen \verb|<div>|.
+    
+    \item \textbf{Child Combinator (\verb|>|):} Dinyatakan dengan tanda lebih besar (contoh: \verb|ul > li|). Berbeda dengan \textit{descendant}, kombinator ini sangat ketat secara hierarki; ia hanya memilih elemen \verb|<li>| yang merupakan anak langsung (\textit{direct child} atau bertetangga langsung dengan \textit{edge} derajat 1 ke bawah) dari \verb|<ul>|.
+    
+    \item \textbf{Adjacent Sibling Combinator (\verb|+|):} Dinyatakan dengan tanda tambah (contoh: \verb|h1 + p|). Memilih elemen \verb|<p>| yang posisinya berada tepat setelah elemen \verb|<h1>| dan memiliki \textit{parent} (simpul induk) yang sama.
+    
+    \item \textbf{General Sibling Combinator (\verb|~|):} Dinyatakan dengan tanda tilde (contoh: \verb|h1 ~ p|). Memilih semua elemen \verb|<p>| yang muncul setelah elemen \verb|<h1>| yang berada pada level hierarki (\textit{parent}) yang sama, tidak peduli apakah letaknya bersebelahan langsung atau diselingi oleh simpul lain.
+\end{enumerate}
+
+Pemahaman yang komprehensif terhadap pola struktural ini mutlak diperlukan dalam merancang mekanisme \textit{Breadth-First Search} (BFS) maupun \textit{Depth-First Search} (DFS), karena algoritma harus mampu menerjemahkan sintaks kueri ini menjadi aturan kondisional (\textit{conditional logic}) saat berpindah dari satu simpul ke simpul lainnya di dalam pohon DOM.
+
+\subsection{Algoritma Breadth-First Search (BFS)}
+
+Algoritma \textit{Breadth-First Search} (BFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengunjungi simpul (\textit{node}) secara melebar (per level). Pencarian dimulai dari simpul awal (biasanya simpul akar atau \textit{root}) pada level $n$, kemudian mengeksplorasi seluruh simpul tetangga yang berada pada level yang sama secara berurutan, sebelum turun untuk mengunjungi simpul-simpul di level $n+1$ atau kedalaman selanjutnya. Karakteristik utama dari BFS adalah penelusuran yang memprioritaskan keluasan (\textit{breadth}) tingkat hierarki daripada kedalaman (\textit{depth}) cabang.
+
+Dalam implementasinya, algoritma BFS beroperasi menggunakan struktur data antrean (\textit{Queue}) yang mengedepankan prinsip \textit{First-In-First-Out} (FIFO). Cara kerja sistematis algoritma ini adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam antrean.
+    \item Lakukan perulangan selama antrean tidak kosong: ambil (keluarkan) simpul dari elemen terdepan (\textit{front}) antrean tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{enqueue}) seluruh simpul tetangga (atau \textit{child node} pada pohon DOM) dari simpul tersebut ke bagian belakang antrean.
+\end{enumerate}
+
+Penggunaan algoritma BFS sangat optimal untuk mencari elemen terdekat dari titik awal pencarian (\textit{shortest path}). Dalam konteks penelusuran pohon DOM halaman web, BFS akan memeriksa seluruh elemen saudara (\textit{sibling}) pada hierarki yang sama terlebih dahulu sebelum memeriksa elemen anak (\textit{descendant}) yang letaknya bersarang lebih dalam.
+
+\vspace{0.3cm}
+\noindent\textbf{Permisalan Cara Kerja BFS:} \\
+Sebagai analogi yang mudah dipahami, bayangkan pohon DOM sebagai sebuah struktur organisasi perusahaan yang sangat besar. Simpul akar (\verb|<html>|) adalah Direktur Utama. Di bawahnya (level 1) terdapat \verb|<head>| dan \verb|<body>| yang bertindak sebagai para Manajer. Di bawah Manajer (level 2) terdapat elemen seperti \verb|<h1>|, \verb|<p>|, atau \verb|<div>| yang bertindak sebagai Staf.
+
+Jika menggunakan BFS untuk mencari elemen tertentu (misalnya seorang Staf dengan ID tertentu), algoritma tidak akan menelusuri satu divisi secara mendalam dari Manajer langsung ke staf magang. Alih-alih, BFS akan melakukan pemeriksaan menyapu secara horizontal:
+\begin{itemize}
+    \item Bertanya kepada Direktur Utama (Level 0).
+    \item Bertanya kepada seluruh Manajer secara bergantian, dari ujung kiri ke ujung kanan (Level 1).
+    \item Jika belum ditemukan, barulah turun dan bertanya kepada seluruh Staf di semua divisi (Level 2).
+\end{itemize}
+Proses penelusuran ini ibarat riak gelombang air yang menyebar secara merata, menyapu seluruh titik pada radius terdekat sebelum meluas ke radius yang lebih jauh. Oleh karena itu, jika elemen HTML yang dicari berada di bagian luar atau tidak terlalu dalam dari \textit{root}, algoritma BFS akan menemukannya dengan sangat cepat.
+
+\subsection{Algoritma Breadth-First Search (BFS)}
+
+Algoritma \textit{Breadth-First Search} (BFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengunjungi simpul (\textit{node}) secara melebar (per level). Pencarian dimulai dari simpul awal (biasanya simpul akar atau \textit{root}) pada level $n$, kemudian mengeksplorasi seluruh simpul tetangga yang berada pada level yang sama secara berurutan, sebelum turun untuk mengunjungi simpul-simpul di level $n+1$ atau kedalaman selanjutnya. Karakteristik utama dari BFS adalah penelusuran yang memprioritaskan keluasan (\textit{breadth}) tingkat hierarki daripada kedalaman (\textit{depth}) cabang.
+
+Dalam implementasinya, algoritma BFS beroperasi menggunakan struktur data antrean (\textit{Queue}) yang mengedepankan prinsip \textit{First-In-First-Out} (FIFO). Cara kerja sistematis algoritma ini adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam antrean.
+    \item Lakukan perulangan selama antrean tidak kosong: ambil (keluarkan) simpul dari elemen terdepan (\textit{front}) antrean tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{enqueue}) seluruh simpul tetangga yang terhubung langsung dengan simpul tersebut ke bagian belakang antrean.
+\end{enumerate}
+
+Penggunaan algoritma BFS sangat optimal untuk mencari lintasan terpendek (\textit{shortest path}). Dalam konteks penelusuran graf, BFS akan memeriksa seluruh simpul tetangga secara merata sebelum menyusuri lintasan yang jaraknya lebih jauh dari simpul awal.
+
+\vspace{0.3cm}
+\noindent\textbf{Contoh Penelusuran BFS pada Graf:} \\
+Misalkan terdapat sebuah pohon graf dengan simpul awal adalah \textbf{A} yang bertindak sebagai \textit{root}. Simpul A terhubung ke simpul \textbf{B} dan \textbf{C}. Simpul B memiliki anak \textbf{D} dan \textbf{E}, sedangkan simpul C memiliki anak \textbf{F}. Terakhir, simpul E terhubung ke simpul \textbf{G}. Jika BFS digunakan untuk mencari simpul G dimulai dari simpul A, alur kunjungannya adalah sebagai berikut:
+\begin{itemize}
+    \item \textbf{Level 0:} Algoritma mengevaluasi simpul \textbf{A}. Karena bukan target, tetangganya (B dan C) dimasukkan ke dalam antrean.
+    \item \textbf{Level 1:} Mengambil \textbf{B} dari antrean (memasukkan D dan E), lalu mengambil \textbf{C} dari antrean (memasukkan F).
+    \item \textbf{Level 2:} Mengambil \textbf{D} (tidak ada anak), lalu mengambil \textbf{E} (memasukkan G), dan mengambil \textbf{F} (tidak ada anak).
+    \item \textbf{Level 3:} Mengambil \textbf{G} dari antrean. Target ditemukan dan pencarian selesai.
+\end{itemize}
+Urutan evaluasi simpul yang dikunjungi BFS secara keseluruhan adalah: \textbf{A $\rightarrow$ B $\rightarrow$ C $\rightarrow$ D $\rightarrow$ E $\rightarrow$ F $\rightarrow$ G}. Dapat dilihat bahwa graf ditelusuri secara berlapis, menyelesaikan satu kedalaman sebelum berpindah ke kedalaman berikutnya.
+
+\subsection{Algoritma Depth-First Search (DFS)}
+
+Algoritma \textit{Depth-First Search} (DFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengeksplorasi sedalam mungkin di sepanjang setiap cabang sebelum melakukan proses mundur (\textit{backtracking}). Pencarian dimulai dari simpul awal (\textit{root}), lalu dilanjutkan dengan memprioritaskan kunjungan ke simpul anak (biasanya yang paling kiri atau berdasarkan prioritas tertentu) terus ke bawah hingga mencapai simpul daun (\textit{leaf node}) terdalam atau simpul tak bertetangga. Karakteristik utama dari DFS adalah penelusuran yang memprioritaskan kedalaman (\textit{depth}) lintasan daripada keluasan (\textit{breadth}) level cabang.
+
+Dalam implementasinya, algoritma DFS beroperasi menggunakan struktur data tumpukan (\textit{Stack}) yang mengedepankan prinsip \textit{Last-In-First-Out} (LIFO), atau diimplementasikan secara elegan menggunakan mekanisme rekursi. Cara kerja sistematis algoritma ini (versi iteratif dengan \textit{Stack}) adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam tumpukan (\textit{stack}).
+    \item Lakukan perulangan selama tumpukan tidak kosong: ambil (keluarkan) simpul dari elemen teratas (\textit{top}) tumpukan tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{push}) seluruh simpul tetangga yang belum dikunjungi dari simpul tersebut ke bagian atas tumpukan. 
+    \item Jika sebuah jalur telah dieksplorasi hingga ke ujung dan target belum ditemukan, algoritma akan \textit{backtrack} (mundur) dan melanjutkan proses pencarian dari persimpangan cabang sebelumnya yang simpulnya masih tersimpan di dalam tumpukan.
+\end{enumerate}
+
+Penggunaan algoritma DFS sangat optimal untuk mengeksplorasi graf yang memiliki kedalaman ekstrem atau untuk mencari keberadaan lintasan tertentu tanpa harus memperlebar pencarian di memori.
+
+\vspace{0.3cm}
+\noindent\textbf{Contoh Penelusuran DFS pada Graf:} \\
+Menggunakan graf yang sama: simpul A terhubung ke B dan C; simpul B ke D dan E; simpul C ke F; dan simpul E ke G. Jika algoritma DFS digunakan untuk mencari simpul F dari simpul A (dengan asumsi penelusuran memprioritaskan cabang paling kiri terlebih dahulu), alur kunjungannya adalah sebagai berikut:
+\begin{itemize}
+    \item \textbf{Langkah 1:} Mulai dari simpul \textbf{A}. Lanjutkan penelusuran langsung ke cabang kiri, yaitu simpul \textbf{B}.
+    \item \textbf{Langkah 2:} Dari B, teruskan kembali ke cabang kiri sedalam mungkin, yaitu simpul \textbf{D}.
+    \item \textbf{Langkah 3:} Simpul D adalah daun (tidak memiliki anak). Algoritma mundur (\textit{backtrack}) ke simpul B, lalu menelusuri cabang B yang belum dikunjungi, yaitu simpul \textbf{E}.
+    \item \textbf{Langkah 4:} Dari E, algoritma kembali turun menyusuri kedalaman menuju simpul \textbf{G}.
+    \item \textbf{Langkah 5:} Simpul G adalah daun. Algoritma \textit{backtrack} berulang kali: naik ke E, naik ke B, hingga kembali ke titik awal \textbf{A}. 
+    \item \textbf{Langkah 6:} Dari A, algoritma baru berpindah ke cabang kanannya yang belum tereksplorasi, yaitu simpul \textbf{C}. Dari C, turun ke simpul \textbf{F}. Target ditemukan.
+\end{itemize}
+Urutan evaluasi simpul yang dikunjungi DFS secara keseluruhan adalah: \textbf{A $\rightarrow$ B $\rightarrow$ D $\rightarrow$ E $\rightarrow$ G $\rightarrow$ C $\rightarrow$ F}. Dapat dilihat bahwa DFS menukik tajam secara vertikal hingga ke dasar suatu cabang, sebelum berbalik untuk mengeksplorasi cabang lainnya.
+\subsection{Web Scraping dan Parsing}
+
+\textit{Web scraping}, atau ekstraksi data web, adalah sebuah proses pengambilan data mentah dari suatu situs web secara otomatis. Proses ini beroperasi dengan cara mengirimkan permintaan HTTP (\textit{HTTP request}) ke sebuah URL tertentu. Sebagai respons atas permintaan tersebut, peladen (\textit{server}) web akan mengembalikan konten halaman web yang umumnya berformat HTML. Konten HTML mentah ini memuat berbagai informasi berharga, seperti teks, gambar, tautan, hingga tabel data. Namun, data tersebut masih tertanam di dalam berbagai tag HTML sehingga sulit untuk diekstraksi dan dianalisis dalam bentuk mentahnya. Pendekatan \textit{scraping} ini sangat krusial dalam mengumpulkan dataset berskala besar yang lazim digunakan untuk kebutuhan riset pasar, pemantauan harga, pengumpulan daftar properti, hingga pengumpulan artikel berita. 
+
+Dalam praktiknya, proses \textit{data scraping} difasilitasi oleh berbagai pustaka dan kerangka kerja pemrograman untuk otomatisasi. Beberapa perangkat yang umum digunakan antara lain Scrapy, sebuah kerangka kerja yang fleksibel untuk membangun \textit{web crawlers}; Selenium, yang mampu menyimulasikan interaksi pengguna pada \textit{browser} sehingga sangat efektif untuk melakukan \textit{scraping} pada situs web dinamis berbasis JavaScript; serta pustaka seperti Requests-HTML. Selain itu, terdapat pula berbagai platform \textit{scraper} otomatis (seperti Bright Data, Octoparse, atau Diffbot) yang memungkinkan ekstraksi data tanpa penulisan kode tambahan.
+
+Karena data hasil \textit{scraping} umumnya berupa dokumen HTML yang tidak terstruktur, tahapan selanjutnya yang mutlak diperlukan adalah \textit{Data Parsing} (penguraian data). \textit{Parsing} merupakan proses analisis dan konversi data mentah tak terstruktur menjadi format struktur data yang lebih rapi dan siap untuk diproses lebih lanjut, seperti JSON, XML, atau CSV. Dalam konteks pengolahan web, \textit{parsing} berfokus pada penguraian struktur dokumen HTML untuk mengekstraksi potongan informasi yang spesifik—misalnya mengambil teks dari tag judul (\textit{title}), isi paragraf, atau atribut dari sebuah elemen. 
+
+Proses \textit{parsing} tidak sekadar mengambil data, melainkan mengatur data tersebut berdasarkan hierarki pohon dokumen agar dapat disimpan di basis data atau dianalisis. Proses ini umumnya mengandalkan perangkat pengurai (\textit{parser}) seperti BeautifulSoup pada bahasa Python, yang memungkinkan penelusuran struktur pohon HTML secara efisien untuk menemukan dan mengekstrak elemen yang bermakna. Di luar Python, terdapat pula pustaka seperti Jsoup pada Java, maupun pemanfaatan Ekspresi Reguler (\textit{Regular Expressions}) untuk menangkap pola teks yang lebih kompleks dari data mentah. Secara keseluruhan, kombinasi antara \textit{web scraping} dan \textit{HTML parsing} membentuk sebuah alur kerja integral dalam menangani data web, memproses data formulir, hingga mengolah respons API.
+
+% ========================
+% BAB 3
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 3} \\
+    \vspace{0.2cm}
+    \Large\textbf{APLIKASI BFS DAN DFS}
+\end{center}
+\addcontentsline{toc}{section}{BAB 3: Aplikasi BFS dan DFS}
+\setcounter{section}{3}
+\setcounter{subsection}{0}
+
+\subsection{Representasi Pohon DOM pada Program}
+
+Sebelum algoritma penelusuran seperti BFS dan DFS dapat dioperasikan, dokumen HTML mentah harus diterjemahkan terlebih dahulu ke dalam bentuk struktur data pohon yang dapat dipahami oleh program. Pada aplikasi ini, setiap elemen HTML direpresentasikan secara individual sebagai sebuah objek bernama \texttt{DomNode}. Pemilihan representasi berbasis objek ini didasari oleh kebutuhan untuk menyimpan berbagai atribut yang melekat pada setiap elemen HTML secara rapi dan terstruktur.
+
+Setiap objek \texttt{DomNode} menyimpan beberapa informasi esensial. Pertama, terdapat sebuah identifikator unik (\texttt{Id}) yang membedakan setiap simpul (\textit{node}) di dalam pohon, misalnya \texttt{"node-1"} atau \texttt{"node-42"}. Kedua, nama tag HTML (\texttt{TagName}) yang mencerminkan jenis elemen aslinya, seperti \verb|div|, \verb|span|, atau \verb|p|. Ketiga, atribut \textit{id} HTML (\texttt{ElementId}) beserta daftar kelas CSS (\texttt{Classes}) yang nantinya akan menjadi kunci utama dalam proses pencocokan \textit{selector}. Keempat, terdapat daftar simpul anak (\texttt{Children}) yang mendefinisikan hubungan hierarkis antar-elemen layaknya ranting pada sebuah pohon. Kelima, informasi kedalaman (\texttt{Depth}) yang menunjukkan seberapa jauh jarak simpul tersebut dari akar (\textit{root}), di mana simpul akar selalu memiliki nilai kedalaman nol. Selain itu, setiap simpul juga dibekali dengan \textit{array} untuk \textit{binary lifting} (\texttt{Up}) berukuran 20, yang dipersiapkan untuk mendukung operasi kueri \textit{Lowest Common Ancestor} (LCA) secara efisien.
+
+Proses konversi dari teks HTML mentah menjadi pohon \texttt{DomNode} ini dilakukan oleh komponen \textit{parser} yang memanfaatkan pustaka \texttt{HtmlAgilityPack}. Pustaka ini membaca dokumen secara berurutan, mengenali setiap tag dan atributnya, lalu menyusunnya ke dalam hierarki pohon yang utuh. Setiap kali sebuah tag ditemukan, program akan menginstansiasi objek \texttt{DomNode} baru dan merangkainya dengan simpul induk (\textit{parent}) melalui daftar \texttt{Children}. Hasil akhir dari tahapan \textit{parsing} ini adalah sebuah pohon DOM yang sepenuhnya merepresentasikan struktur dokumen situs web, siap untuk dijelajahi oleh algoritma pencarian.
+
+\subsection{Mekanisme Pencocokan CSS Selector}
+
+Sebagai jembatan antara penelusuran graf dan pencarian elemen, aplikasi membutuhkan sebuah mekanisme untuk menentukan apakah suatu simpul merupakan target yang sedang dicari, maka diperlukannya fungsi pengecekan \texttt{SelectorMatcher}, yang berfungsi mengevaluasi kecocokan antara sebuah simpul \texttt{DomNode} dengan CSS \textit{Selector} yang dimasukkan oleh pengguna.
+
+Mekanisme pencocokan ini bekerja dengan mendeteksi karakter awalan dari \textit{string selector}. Jika \textit{selector} diawali dengan karakter pagar (\verb|#|), maka evaluasi difokuskan pada atribut \textit{id}.  Misalkan, \verb|#header| akan mencari simpul yang nilai \texttt{ElementId}-nya adalah \texttt{"header"}. Jika diawali dengan karakter titik (\verb|.|), maka pencocokan dilakukan pada atribut kelas, contoh \verb|.container| akan menyaring simpul yang memuat \texttt{"container"} di dalam daftar \texttt{Classes}-nya. Namun, apabila \textit{selector} tidak memiliki karakter awalan khusus, program akan mencocokkannya langsung dengan nama tag HTML aslinya---seperti \verb|div| yang akan menargetkan semua simpul bertag \verb|<div>|. Agar lebih fleksibel, seluruh proses evaluasi ini dirancang bersifat \textit{case-insensitive} (tidak membedakan huruf besar dan kecil), sehingga input seperti \verb|DIV| maupun \verb|div| akan memberikan hasil yang sama.
+
+Komponen \texttt{SelectorMatcher} inilah yang akan selalu dipanggil oleh fungsi kunjungan (\textit{visit function}) setiap kali algoritma BFS atau DFS singgah di sebuah simpul. Dengan pola arsitektur ini, alur kerja menjadi sangat terintegrasi: algoritma penelusuran mengambil peran dalam memandu \textit{rute} perjalanan, sedangkan \texttt{SelectorMatcher} mengambil keputusan apakah simpul di ujung rute tersebut adalah data yang \textit{valid}.
+
+\subsection{Cara Kerja Algoritma BFS pada Program}
+
+Penerapan \textit{Breadth-First Search} (BFS) dalam aplikasi ini menerapakan konsep dasar dari BFS itu sendiri, namun juga membuatkan juga memanfaatkan potensi \textit{multithreading} yang ada pada \textit{framework} .NET. Logika algoritma ini dibungkus di dalam kelas \texttt{BfsAlgorithm} melalui metode \texttt{ExecuteParallel}. Metode ini menerima empat parameter utama: simpul akar pohon DOM, fungsi aksi kunjungan, batas maksimal pencarian (opsional), serta koleksi data \textit{thread-safe} untuk menampung elemen yang berhasil dicocokkan.
+
+Penelusuran diinisiasi dengan memasukkan simpul akar ke dalam sebuah antrean bertipe \texttt{ConcurrentQueue}, yaitu varian struktur data antrean yang dijamin aman (\textit{thread-safe}) meskipun diakses oleh banyak \textit{thread} secara bersamaan. Setelah itu, algoritma akan masuk ke dalam putaran perulangan utama yang terus mengeksekusi data selama antrean tidak kosong dan target kuota hasil belum terpenuhi.
+
+Pada setiap iterasinya, algoritma akan menghitung total simpul yang ada pada kedalaman level saat ini. Seluruh simpul tersebut kemudian dikeluarkan dari antrean secara serentak dan disimpan ke dalam sebuah daftar sementara. Tujuan pemisahan ini sangat strategis: agar seluruh simpul pada level yang sama dapat dieksekusi secara \textbf{paralel} menggunakan perintah \texttt{Parallel.ForEach}. Artinya, jika sebuah level pada pohon DOM memiliki ratusan elemen, beban pemeriksaannya dapat didistribusikan ke berbagai inti prosesor secara serentak.
+
+Di dalam blok pemrosesan paralel tersebut, setiap \textit{thread} bertugas menjalankan fungsi kunjungan pada simpul bagiannya. Fungsi ini akan mencatat riwayat kunjungan, mencocokkan \textit{selector}, dan mengamankan data ke dalam daftar hasil jika kriteria terpenuhi. Terakhir, seluruh anak (\textit{children}) dari simpul tersebut dimasukkan kembali ke antrean untuk dipersiapkan pada pemrosesan level berikutnya.
+
+Untuk menjaga efisiensi, aplikasi ini juga mengadopsi mekanisme penghentian dini (\textit{early termination}). Setiap kali fungsi kunjungan berjalan, program akan secara ketat memantau apakah kuota \texttt{maxResults} sudah tercapai. Jika sudah, pemrosesan paralel akan langsung diinterupsi menggunakan perintah \texttt{state.Stop()} dan putaran utama dihentikan melalui \texttt{break}. Fitur ini mencegah algoritma membuang-buang daya komputasi untuk menelusuri sisa pohon yang sudah tidak lagi relevan.
+
+\subsection{Cara Kerja Algoritma DFS pada Program}
+
+Penerapan algoritma \textit{Depth-First Search} (DFS) dalam aplikasi ini, yaitu dengan menelusuri satu cabang hingga ke titik terdalamnya sebelum melangkah mundur dan mencoba percabangan lain. Implementasi algoritma ini diatur di dalam kelas \texttt{DfsAlgorithm} melalui metode \texttt{ExecuteParallel}.
+
+Alih-alih menggunakan pemanggilan fungsi rekursif yang sering dicontohkan dalam buku teks, program ini membangun DFS secara iteratif dengan memanfaatkan \texttt{ConcurrentStack}. Keputusan arsitektural ini diambil dengan dua pertimbangan: pertama, untuk meminimalisasi risiko \textit{stack overflow} yang rentan terjadi ketika menghadapi pohon DOM dengan tingkat kedalaman yang ekstrem; dan kedua, untuk memberikan ruang kontrol yang lebih eksplisit terhadap alur penelusuran.
+
+Langkah pertama dimulai dengan menyisipkan simpul akar ke dalam tumpukan. Pada setiap putaran, simpul yang berada di posisi paling atas (\textit{top}) akan dikeluarkan (\textit{pop}) dan diproses. Proses pemeriksaan ini dieksekusi secara asinkron memanfaatkan \texttt{Parallel.Invoke}, yang memungkinkan fungsi kunjungan berjalan efisien tanpa harus membekukan alur utama program. Begitu simpul selesai diperiksa, seluruh anak dari simpul tersebut akan didorong masuk ke dalam tumpukan.
+
+Ada satu detail teknis yang sangat krusial di sini: proses pendorongan (\textit{push}) anak-anak simpul ke dalam tumpukan sengaja dilakukan secara \textbf{terbalik} (dari anak terakhir hingga anak pertama). Pendekatan ini merupakan konsekuensi logis dari sifat tumpukan yang berprinsip \textit{Last-In-First-Out} (LIFO). Dengan menempatkan anak pertama di urutan terakhir, anak tersebut otomatis akan menduduki posisi puncak tumpukan dan dievaluasi lebih dulu pada putaran berikutnya. Trik matematis ini menjamin urutan penelusuran tetap mengalir dari kiri ke kanan (\textit{left-to-right}), persis seperti perilaku standar DFS.
+
+Berbeda dengan BFS yang memparalelkan eksekusi berdasarkan sekumpulan simpul dalam satu level, paralelisasi pada DFS bersifat lebih sempit. Pemanggilan \texttt{Parallel.Invoke} hanya mengisolasi eksekusi fungsi kunjungan pada satu simpul tunggal, sementara mekanisme perpindahan tumpukannya tetap berjalan secara berurutan. Meskipun percepatan komputasinya tidak sesignifikan BFS, strategi ini memastikan bahwa kaidah penelusuran kedalaman (\textit{depth-first}) tidak rusak oleh perlombaan proses (\textit{race condition}). Sama halnya dengan BFS, fitur terminasi dini juga diterapkan secara ketat pada DFS agar proses dapat langsung diakhiri saat target jumlah hasil telah tercapai.
+
+\subsection{Pseudocode Algoritma}
+
+\subsubsection{Pseudocode BFS}
+\begin{algorithm}[H]
+\caption{BFS dengan Paralelisasi per Level pada Pohon DOM}
+\label{alg:bfs}
+\begin{algorithmic}[1]
+\Procedure{BFS-Parallel}{$root, visitAction, maxResults, matches$}
+    \State $queue \gets$ \textsc{NewConcurrentQueue}()
+    \State $queue$.\textsc{Enqueue}($root$)
+    \While{$queue$ tidak kosong}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{break}
+        \EndIf
+        \State $levelSize \gets |queue|$
+        \State $currentLevel \gets$ daftar kosong
+        \For{$i \gets 1$ \textbf{to} $levelSize$}
+            \State $node \gets queue$.\textsc{Dequeue}()
+            \State $currentLevel$.\textsc{Add}($node$)
+        \EndFor
+        \ForAll{$node \in currentLevel$ \textbf{secara paralel}} \Comment{Parallel.ForEach}
+            \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+                \State Hentikan pemrosesan paralel
+                \State \textbf{continue}
+            \EndIf
+            \State \textsc{VisitAction}($node$) \Comment{Catat kunjungan \& cek selector}
+            \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+                \State Hentikan pemrosesan paralel
+            \EndIf
+            \ForAll{$child \in node.Children$}
+                \State $queue$.\textsc{Enqueue}($child$)
+            \EndFor
+        \EndFor
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode DFS}
+
+\begin{algorithm}[H]
+\caption{DFS Iteratif dengan Stack pada Pohon DOM}
+\label{alg:dfs}
+\begin{algorithmic}[1]
+\Procedure{DFS-Parallel}{$root, visitAction, maxResults, matches$}
+    \State $stack \gets$ \textsc{NewConcurrentStack}()
+    \State $stack$.\textsc{Push}($root$)
+    \While{$stack$ tidak kosong}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{break}
+        \EndIf
+        \State $node \gets stack$.\textsc{Pop}()
+        \State Jalankan secara paralel: \Comment{Parallel.Invoke}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{continue}
+        \EndIf
+        \State \textsc{VisitAction}($node$) \Comment{Catat kunjungan \& cek selector}
+        \If{$node.Children \neq \text{null}$}
+            \For{$i \gets |node.Children| - 1$ \textbf{downto} $0$} \Comment{Push terbalik}
+                \State $stack$.\textsc{Push}($node.Children[i]$)
+            \EndFor
+        \EndIf
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode Pencocokan Selector}
+\begin{algorithm}[H]
+\caption{Pencocokan CSS Selector pada Simpul DOM}
+\label{alg:matcher}
+\begin{algorithmic}[1]
+\Function{Matches}{$node, selector$}
+    \If{$selector$ kosong}
+        \State \Return \textbf{false}
+    \EndIf
+    \If{$selector$ diawali \texttt{'\#'}}
+        \State \Return $node.ElementId = selector[1..]$ \Comment{ID Selector}
+    \ElsIf{$selector$ diawali \texttt{'.'}}
+        \State $targetClass \gets selector[1..]$
+        \State \Return $targetClass \in node.Classes$ \Comment{Class Selector}
+    \Else
+        \State \Return $node.TagName = selector$ \Comment{Tag Selector}
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode Fungsi Kunjungan}
+\begin{algorithm}[H]
+\caption{Fungsi Kunjungan Simpul (LogVisit)}
+\label{alg:logvisit}
+\begin{algorithmic}[1]
+\Procedure{LogVisit}{$node$}
+    \State $nodesVisited \gets nodesVisited + 1$ \Comment{Penambahan atomik}
+    \State $maxDepth \gets \max(maxDepth, node.Depth)$ \Comment{Pembaruan atomik}
+    \State $traversalPath$.\textsc{Enqueue}($node.Id$)
+    \State $traversalLog$.\textsc{Enqueue}(\texttt{"Mengunjungi <"} $+ node.TagName +$ \texttt{">"})
+    \If{\textsc{Matches}($node, selector$)}
+        \State $matchedNodes$.\textsc{Add}($node$)
+        \State $traversalLog$.\textsc{Enqueue}(\texttt{"[MATCH] ditemukan"})
+    \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Analisis Kompleksitas Waktu}
+
+\subsubsection{Kompleksitas Waktu BFS}
+
+Pada skenario terburuk (\textit{worst case}), misalnya ketika elemen yang dicari sama sekali tidak ada atau tidak ada batasan kuota \texttt{maxResults}, algoritma BFS terpaksa harus mengunjungi seluruh $n$ simpul. Pada setiap persinggahan, program melakukan operasi antrean (\textit{enqueue} dan \textit{dequeue}) yang memakan waktu konstan $O(1)$, serta mengevaluasi kecocokan \textit{selector} yang secara praktis juga beroperasi pada kecepatan $O(1)$. Berdasarkan perhitungan tersebut, waktu eksekusi sekuensial (linier) dari BFS adalah:
+\[
+T_{BFS}(n) = O(n)
+\]
+
+Saat \textit{multithreading} dilibatkan. Dengan memanfaatkan \texttt{Parallel.ForEach}, beban komputasi dapat didistribusikan. Jika sistem memiliki $p$ buah \textit{thread} yang siap bekerja dan sebuah level ke-$i$ memuat $n_i$ simpul, maka waktu penyelesaian level tersebut dapat dipangkas menjadi $O(n_i / p)$. Bila diakumulasikan secara ideal, waktu komputasinya menyusut menjadi:
+\[
+T_{BFS\text{-}parallel} = O\!\left(\sum_{i=0}^{d} \frac{n_i}{p}\right) = O\!\left(\frac{n}{p}\right)
+\]
+Di dunia nyata, rasio percepatan ini memang tidak murni linear karena akan selalu ada \textit{overhead} sistem untuk sinkronisasi \textit{thread}. Namun pada halaman web dengan struktur DOM yang kaya akan elemen sebaya (lebar), pemangkasan waktu ini tetap akan sangat terasa.
+
+\subsubsection{Kompleksitas Waktu DFS}
+
+Dalam perhitungan sekuensial, nasib DFS serupa dengan BFS. Algoritma akan melangkah satu per satu menyambangi $n$ simpul pada skenario terburuk, melakukan operasi tumpukan (\textit{push} dan \textit{pop}) dengan kompleksitas $O(1)$. Maka:
+\[
+T_{DFS}(n) = O(n)
+\]
+
+Meskipun DFS pada aplikasi ini juga diinjeksi dengan \texttt{Parallel.Invoke}, dampak percepatannya jauh lebih konservatif. Hal ini terjadi karena proses utama yang mengatur alur perjalanan di dalam tumpukan tetap berjalan seperti kendaraan di jalur tunggal (sekuensial). Paralelisasi di sini hanya berlaku pada durasi pemrosesan internal tiap simpul, bukan pada rute perjalanannya. Akibatnya, estimasi waktunya secara keseluruhan tetap berpijak pada kisaran:
+\[
+T_{DFS\text{-}parallel} \approx O(n)
+\]
+
+\subsubsection{Perbandingan Waktu BFS dan DFS}
+Berdasarkan perbandingan waktu pada algoritma BFS dan DFS, algoritma BFS dan DFS memiliki kompleksitas waktu yang sama secara sekuensial, yaitu  $O(n)$. Namun, pada saat algoritma dapat melakukan \textit{multithreading}, algoritma BFS memiliki kompleksitas yang jauh lebih baik dari pada algoritma DFS.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspek} & \textbf{BFS} & \textbf{DFS} \\ \hline
+Kompleksitas waktu (sekuensial) & $O(n)$ & $O(n)$ \\ \hline
+Kompleksitas waktu (paralel) & $O(n/p)$ & $\approx O(n)$ \\ \hline
+Efisiensi terminasi dini (elemen dangkal) & Tinggi & Rendah \\ \hline
+Efisiensi terminasi dini (elemen dalam) & Rendah & Tinggi \\ \hline
+\end{tabular}
+\caption{Perbandingan Kompleksitas Waktu BFS dan DFS}
+\label{tab:waktu}
+\end{table}
+
+\subsection{Analisis Kompleksitas Ruang (Memori)}
+
+\subsubsection{Kompleksitas Ruang BFS}
+
+Arsitektur BFS mewajibkannya untuk menyimpan seluruh simpul dari level yang sedang aktif beserta calon anak-anaknya secara bersamaan di dalam antrean. Jumlah data ini berkorelasi langsung dengan seberapa "lebar" wujud pohon tersebut.
+
+Pada kasus paling parah, di mana pohon berbentuk sangat rata dan melebar ke samping (dengan faktor percabangan $b$), level terbawah akan dijejali oleh $O(b^d)$ simpul. Kebutuhan memori BFS didefinisikan sebagai:
+\[
+S_{BFS} = O(w)
+\]
+di mana $w$ mewakili rekor jumlah simpul terbanyak di satu level tertentu. Jika struktur DOM sangat dangkal namun berjejer panjang, nilai $w$ bisa membengkak mendekati total elemen $O(n)$.
+
+\subsubsection{Kompleksitas Ruang DFS}
+
+Arsitektur DFS memiliki ikatan memori dengan tingkat kedalaman (\textit{depth}) pohon. Tumpukan data pada DFS dirancang secara efisien untuk hanya "mengingat" jalan pulang dari simpul yang sedang ia pijak saat ini, beserta beberapa pintu persimpangan (\textit{sibling}) yang belum sempat ia buka.
+
+Jika direpresentasikan dalam rumus, untuk pohon sedalam $d$ dengan faktor cabang $b$, tumpukan DFS hanya akan menanggung beban sekitar $b - 1$ simpul simpangan di setiap lapisan yang dilewatinya. Alhasil, batas maksimum memorinya adalah:
+\[
+S_{DFS} = O(b \cdot d)
+\]
+
+\subsubsection{Perbandingan Memori BFS dan DFS}
+
+Bedasarkan perbandingan memori pada algoritma BFS dan DFS, arsitektur BFS memiliki kompleksitas memori yang sangat besar, yaitu mendekati  total elemen $O(n)$. Sedangkan arsitektur DFS memiliki kompleksitas memori yang sangat cukup, yaitu hingga tingkat kedalaman pohon, yaitu $O(b.d)$ dengan pohon sedalam \textit{d} dengan faktor cabang \textit{b} 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspek} & \textbf{BFS} & \textbf{DFS} \\ \hline
+Struktur data utama & \texttt{ConcurrentQueue} & \texttt{ConcurrentStack} \\ \hline
+Kompleksitas ruang (umum) & $O(w)$ & $O(b \cdot d)$ \\ \hline
+Kompleksitas ruang (terbur\documentclass[12pt]{article}
+
+% ========================
+% PACKAGES
+% ========================
+\usepackage{graphicx}
+\usepackage{framed}
+\usepackage{alltt}
+\usepackage{amssymb}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{appendix}
+\usepackage{xurl}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
+
+% ========================
+% HEADER & FOOTER
+% ========================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{IF2211 - Strategi Algoritma}
+\fancyhead[R]{Tugas Besar 2}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\contentsname}{Daftar Isi}
+\renewcommand{\refname}{Daftar Pustaka}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codeblue}{rgb}{0.0, 0.2, 0.6}
+
+\lstdefinestyle{cppstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    numbers=left,
+    tabsize=4,
+    language=C++
+}
+
+\lstset{style=cppstyle}
+
+% ========================
+% TITLE
+% ========================
+\title{Laporan Tugas Besar 2 IF2211}
+\author{Kelompok [Nama Kelompok]}
+\date{\today}
+
+\begin{document}
+\setlength{\parskip}{6pt}
+
+% ========================
+% COVER PAGE
+% ========================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vspace*{1cm}
+{\Huge \bfseries Tugas Besar 2 IF2211 Strategi Algoritma \par}
+
+\vspace{1cm}
+{\Large IF2211 - Strategi Algoritma \par}
+\vspace{0.5cm}
+{\normalsize Pemanfaatan Algoritma BFS dan DFS dalam Mekanisme Penelusuran CSS pada Pohon DOM \par}
+\vspace{0.25cm}
+{\small Semester II tahun 2025/2026 \par}
+
+\vfill
+\includegraphics[width=0.6\textwidth]{Cover.png}
+\vspace{1cm}
+
+\vfill
+{\normalsize \textbf{Disusun oleh:} \par}
+\vspace{0.3cm}
+\begin{tabular}{ll}
+13524038 & An-Dafa Anza Avansyah \\
+13524053 & Muhammad Haris Putra Sulastianto \\
+13524059 & Raymond Jonathan Dwi Putra J \\
+\end{tabular}
+
+\vfill
+{\large
+Program Studi Teknik Informatika \par
+\vspace{0.3cm}
+Sekolah Teknik Elektro dan Informatika \par
+\vspace{0.3cm}
+Institut Teknologi Bandung \par
+\vspace{0.3cm}
+2026 \par
+}
+
+\end{titlepage}
+
+% ========================
+% BAB 1
+% ========================
+\begin{center}
+    \Large\textbf{BAB 1} \\
+    \vspace{0.2cm}
+    \Large\textbf{DESKRIPSI TUGAS}
+\end{center}
+\addcontentsline{toc}{section}{BAB 1: Deskripsi Tugas}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{gambar_1.png} 
+    \caption{Struktur Pohon DOM}
+    \vspace{0.2cm}
+    \url{https://www.geeksforgeeks.org/java/what-is-document-object-in-java-dom/}
+\end{figure}
+
+Document Object Model (DOM) merupakan representasi terstruktur dari dokumen HTML dalam bentuk \textit{tree} yang memungkinkan setiap elemen pada halaman web diakses, dimodifikasi, dan dimanipulasi oleh program. Struktur ini merepresentasikan hubungan antar elemen HTML seperti \textit{parent}, \textit{child}, dan \textit{sibling} sehingga memudahkan pengolahan dokumen secara terprogram.
+
+Struktur sebuah file HTML pada umumnya meliputi elemen \textit{root} \verb|<html>| yang berisi dua bagian utama yaitu \verb|<head>| dan \verb|<body>|. Bagian \verb|<head>| berisi metadata seperti judul halaman, \textit{link stylesheet}, dan \textit{script}, sedangkan \verb|<body>| berisi konten utama halaman seperti teks, gambar, tombol, dan elemen HTML lainnya yang ditampilkan kepada pengguna.
+
+Sebuah website menampilkan sebuah DOM melalui sebuah file bernama Cascading Style Sheets (CSS) yang bertujuan mendeklarasikan visualisasi elemen-elemen pada pohon. Deklarasi visualisasi ditempelkan pada elemen-elemen yang berkaitan melalui CSS Selector.
+
+Pada Tugas Besar 2 Strategi Algoritma ini, mahasiswa diminta untuk menelusuri dan mencari elemen pada struktur DOM berdasarkan CSS Selector tertentu dengan menggunakan algoritma penelusuran graf yaitu \textit{Breadth First Search} (BFS) dan \textit{Depth First Search} (DFS). Algoritma tersebut digunakan untuk menjelajahi struktur pohon DOM guna menemukan elemen yang sesuai dengan \textit{selector} yang diberikan.
+
+Komponen-komponen penting yang terdapat pada tugas besar ini antara lain:
+
+\begin{enumerate}
+    \item \textbf{Tags}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{gambar_2.png}
+        \caption{Struktur Syntax HTML}
+        \vspace{0.2cm}
+        \url{https://tutorial.techaltum.com/htmlTags.html}
+    \end{figure}
+    Tag pada HTML merupakan penanda (\textit{markup}) yang digunakan untuk mendefinisikan struktur dan jenis elemen dalam sebuah dokumen HTML. Tag memberi tahu \textit{browser} bagaimana suatu bagian konten harus ditafsirkan dan ditampilkan pada halaman web. Secara umum, tag HTML ditulis menggunakan tanda kurung sudut (\verb|< >|). Sebagian besar elemen HTML memiliki pasangan tag pembuka dan tag penutup. Tag pembuka menandai awal suatu elemen, sedangkan tag penutup menandai akhir elemen tersebut. Tag penutup ditulis dengan menambahkan tanda garis miring \verb|/| sebelum nama tag. Terdapat beberapa jenis tag HTML yang \textit{self-closing}. Dalam struktur DOM, setiap tag HTML direpresentasikan sebagai \textit{node} pada pohon DOM. Hubungan antar tag membentuk struktur hierarki seperti \textit{parent}, \textit{child}, dan \textit{sibling}. Struktur inilah yang memungkinkan dokumen HTML diproses sebagai sebuah pohon ketika dilakukan penelusuran menggunakan algoritma seperti BFS atau DFS.
+
+    \item \textbf{CSS Selector}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\textwidth]{gambar_3.png}
+        \caption{Visualisasi CSS Selector}
+        \vspace{0.2cm}
+        \url{https://www.reddit.com/r/webdev/comments/ur6v5m/css_selectors_visually_explained/}
+    \end{figure}
+    CSS \textit{Selector} adalah mekanisme pada CSS untuk memilih elemen HTML tertentu pada struktur DOM agar dapat diberikan aturan \textit{style}. Dengan \textit{selector}, kita dapat menentukan elemen mana yang akan dikenai aturan visual seperti warna, ukuran, atau tata letak. Beberapa \textit{selector} dasar yang umum digunakan adalah sebagai berikut: \textbf{Tag Selector} memilih elemen berdasarkan nama tag HTML (contoh: \verb|p| memilih semua elemen \verb|<p>|); \textbf{Class Selector} memilih elemen yang memiliki atribut \textit{class} tertentu, ditulis dengan tanda titik (\verb|.|) (contoh: \verb|.box|); \textbf{ID Selector} memilih elemen dengan atribut \textit{id} tertentu, ditulis dengan tanda pagar (\verb|#|) (contoh: \verb|#header|); dan \textbf{Universal Selector} memilih semua elemen HTML (contoh: \verb|*|). \textit{Combinator} merupakan cara untuk menggabungkan beberapa jenis \textit{selector} dalam penentuan elemen yang akan terpengaruh, dan terdiri dari: \textit{Child Combinator} (\verb|>|), \textit{Descendent Combinator} (\verb| |), \textit{Adjacent Sibling Combinator} (\verb|+|), dan \textit{General Sibling Combinator} (\verb|~|).
+
+    \item \textbf{HTML Parsing}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{gambar_4.png}
+        \caption{Proses Parsing Pohon HTML}
+        \vspace{0.2cm}
+        \url{https://stackoverflow.com/questions/3150293/how-does-a-parser-for-example-html-work}
+    \end{figure}
+    HTML \textit{Parsing} adalah proses membaca dokumen HTML dan mengubahnya menjadi struktur data pohon (\textit{tree}) yang merepresentasikan hubungan antar elemen HTML. Pada proses ini, \textit{parser} memproses dokumen HTML secara berurutan, mengenali tag pembuka dan tag penutup, kemudian menyusunnya ke dalam struktur hierarki. Setiap tag HTML direpresentasikan sebagai \textit{node} pada pohon. Tag yang berada di dalam tag lain akan menjadi \textit{child node}, sedangkan tag yang membungkusnya menjadi \textit{parent node}. \textit{Node} paling atas pada struktur ini disebut \textit{root}, yang umumnya merupakan elemen \verb|<html>|. Dari \textit{node root} tersebut, elemen-elemen lain seperti \verb|<head>| dan \verb|<body>| akan menjadi cabang yang membentuk struktur pohon DOM. Hasil dari proses \textit{parsing} adalah \textit{DOM Tree}, yaitu representasi pohon dari dokumen HTML yang memungkinkan elemen-elemen pada halaman web ditelusuri, diakses, dan dimanipulasi secara terstruktur. Struktur pohon ini kemudian dapat digunakan dalam proses penelusuran elemen, misalnya dengan menggunakan algoritma \textit{Breadth First Search} (BFS) atau \textit{Depth First Search} (DFS).
+\end{enumerate}
+
+% ========================
+% BAB 2
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 2} \\
+    \vspace{0.2cm}
+    \Large\textbf{LANDASAN TEORI}
+\end{center}
+\addcontentsline{toc}{section}{BAB 2: Landasan Teori}
+\setcounter{section}{2}
+\setcounter{subsection}{0}
+
+\subsection{Document Object Model (DOM)}
+
+Document Object Model (DOM) adalah antarmuka pemrograman untuk dokumen web. DOM merepresentasikan halaman sehingga program dapat mengubah struktur, gaya, dan konten dokumen, seperti HTML yang merepresentasikan halaman web. DOM merepresentasikan dokumen sebagai \textit{node} dan objek sehingga bahasa pemrograman dapat berinteraksi dengan halaman tersebut.
+
+Halaman web adalah dokumen yang dapat ditampilkan di jendela \textit{browser} atau sebagai kode sumber HTML. Dengan DOM, elemen HTML seperti paragraf, gambar, atau tombol diubah menjadi objek JavaScript yang dapat diakses dan dimodifikasi. DOM ini sebagai 'jembatan' antara kode JavaScript dan tampilan halaman web dengan menyediakan model dokumen yang memungkinkan program mengubah struktur, konten, dan gaya halaman tanpa perlu me-\textit{refresh} seluruh halaman.
+
+DOM dibangun menggunakan beberapa API yang bekerja bersama-sama. DOM inti mendefinisikan entitas yang menggambarkan setiap dokumen dan objek di dalamnya. Ini diperluas sesuai kebutuhan oleh API lain yang menambahkan fitur dan kemampuan baru ke DOM. Misalnya, API HTML DOM menambahkan dukungan untuk merepresentasikan dokumen HTML ke DOM inti, dan API SVG menambahkan dukungan untuk merepresentasikan dokumen SVG.
+
+Pohon DOM adalah struktur pohon yang simpul-simpulnya mewakili isi dokumen HTML atau XML. Setiap dokumen HTML atau XML memiliki representasi pohon DOM. Misalnya, perhatikan dokumen berikut:
+\begin{lstlisting}[language=HTML, frame=single, backgroundcolor=\color{backcolour}, basicstyle=\ttfamily\footnotesize, title=Struktur HTML]
+<html lang="en">
+  <head>
+    <title>My Document</title>
+  </head>
+  <body>
+    <h1>Header</h1>
+    <p>Paragraph</p>
+  </body>
+</html>
+\end{lstlisting}
+Struktur DOM-nya terlihat seperti ini:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Pohon_DOM.jpg}
+    \caption{Struktur DOM Hasil Parsing}
+    \vspace{0.2cm}
+    \url{https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model}
+\end{figure}
+Ketika peramban web menguraikan dokumen HTML, ia membangun pohon DOM dan kemudian menggunakannya untuk menampilkan dokumen tersebut.
+
+\subsection{CSS Selector}
+
+Cascading Style Sheets (CSS) \textit{Selector} adalah sebuah mekanisme berupa pola string yang digunakan untuk mengidentifikasi, memilih, dan mencocokkan satu atau sekumpulan elemen (simpul/\textit{node}) di dalam struktur pohon Document Object Model (DOM). Dalam konteks pengembangan web, \textit{selector} umumnya digunakan untuk menerapkan aturan visual (\textit{styling}) pada elemen HTML tertentu. Namun, dalam konteks komputasi dan \textit{web scraping}, CSS \textit{Selector} berfungsi sebagai kueri pencarian (\textit{search query}) yang sangat kuat untuk mengekstraksi data spesifik dari sebuah graf atau pohon dokumen.
+
+Secara konseptual, pencocokan CSS \textit{Selector} beroperasi dengan cara mengevaluasi atribut dari setiap simpul pada pohon DOM dan memeriksa hubungan struktural antar simpul tersebut. CSS \textit{Selector} dapat dibagi menjadi beberapa kategori dasar berdasarkan spesifisitas dan cara kerjanya, antara lain:
+
+\begin{itemize}
+    \item \textbf{Universal Selector (\verb|*|):} Memilih semua elemen di dalam dokumen DOM tanpa terkecuali. Ini setara dengan mengunjungi seluruh simpul dalam pohon tanpa memberikan filter kondisi pencocokan.
+    
+    \item \textbf{Tag/Type Selector:} Memilih elemen berdasarkan nama tag HTML aslinya. Misalnya, \textit{selector} \verb|div| akan mencocokkan semua simpul yang merupakan instansiasi dari tag \verb|<div>|.
+    
+    \item \textbf{Class Selector (\verb|.|):} Memilih elemen yang memiliki atribut kelas tertentu. Satu elemen HTML dapat memiliki beberapa kelas, dan banyak elemen dapat berbagi kelas yang sama. Penulisannya diawali dengan tanda titik, contohnya \verb|.container| akan mencocokkan elemen seperti \verb|<div class="container">|.
+    
+    \item \textbf{ID Selector (\verb|#|):} Memilih elemen berdasarkan atribut \textit{identifier} uniknya. Berdasarkan standar HTML, ID seharusnya bersifat unik di seluruh dokumen (hanya ada satu elemen per ID). Penulisannya diawali dengan tanda pagar, contohnya \verb|#header| akan mencocokkan \verb|<nav id="header">|.
+    
+    \item \textbf{Attribute Selector (\verb|[attr=value]|):} Memilih elemen berdasarkan keberadaan atribut tertentu atau nilai spesifik dari atribut tersebut, seperti \verb|[href]| atau \verb|[type="submit"]|.
+\end{itemize}
+
+Selain \textit{selector} tunggal, CSS mendukung penggunaan \textbf{Kombinator (\textit{Combinator})} untuk mendefinisikan hubungan spasial dan hierarkis antar elemen di dalam pohon DOM. Hal ini sangat relevan dengan algoritma penelusuran graf (seperti BFS dan DFS) karena kombinator mendikte jalur traversal yang sah:
+
+\begin{enumerate}
+    \item \textbf{Descendant Combinator (\textit{Spasi}):} Dinyatakan dengan karakter spasi (contoh: \verb|div p|). Kombinator ini memilih semua elemen \verb|<p>| yang merupakan keturunan (baik \textit{child} langsung maupun keturunan pada kedalaman tingkat berapa pun) dari elemen \verb|<div>|.
+    
+    \item \textbf{Child Combinator (\verb|>|):} Dinyatakan dengan tanda lebih besar (contoh: \verb|ul > li|). Berbeda dengan \textit{descendant}, kombinator ini sangat ketat secara hierarki; ia hanya memilih elemen \verb|<li>| yang merupakan anak langsung (\textit{direct child} atau bertetangga langsung dengan \textit{edge} derajat 1 ke bawah) dari \verb|<ul>|.
+    
+    \item \textbf{Adjacent Sibling Combinator (\verb|+|):} Dinyatakan dengan tanda tambah (contoh: \verb|h1 + p|). Memilih elemen \verb|<p>| yang posisinya berada tepat setelah elemen \verb|<h1>| dan memiliki \textit{parent} (simpul induk) yang sama.
+    
+    \item \textbf{General Sibling Combinator (\verb|~|):} Dinyatakan dengan tanda tilde (contoh: \verb|h1 ~ p|). Memilih semua elemen \verb|<p>| yang muncul setelah elemen \verb|<h1>| yang berada pada level hierarki (\textit{parent}) yang sama, tidak peduli apakah letaknya bersebelahan langsung atau diselingi oleh simpul lain.
+\end{enumerate}
+
+Pemahaman yang komprehensif terhadap pola struktural ini mutlak diperlukan dalam merancang mekanisme \textit{Breadth-First Search} (BFS) maupun \textit{Depth-First Search} (DFS), karena algoritma harus mampu menerjemahkan sintaks kueri ini menjadi aturan kondisional (\textit{conditional logic}) saat berpindah dari satu simpul ke simpul lainnya di dalam pohon DOM.
+
+\subsection{Algoritma Breadth-First Search (BFS)}
+
+Algoritma \textit{Breadth-First Search} (BFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengunjungi simpul (\textit{node}) secara melebar (per level). Pencarian dimulai dari simpul awal (biasanya simpul akar atau \textit{root}) pada level $n$, kemudian mengeksplorasi seluruh simpul tetangga yang berada pada level yang sama secara berurutan, sebelum turun untuk mengunjungi simpul-simpul di level $n+1$ atau kedalaman selanjutnya. Karakteristik utama dari BFS adalah penelusuran yang memprioritaskan keluasan (\textit{breadth}) tingkat hierarki daripada kedalaman (\textit{depth}) cabang.
+
+Dalam implementasinya, algoritma BFS beroperasi menggunakan struktur data antrean (\textit{Queue}) yang mengedepankan prinsip \textit{First-In-First-Out} (FIFO). Cara kerja sistematis algoritma ini adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam antrean.
+    \item Lakukan perulangan selama antrean tidak kosong: ambil (keluarkan) simpul dari elemen terdepan (\textit{front}) antrean tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{enqueue}) seluruh simpul tetangga (atau \textit{child node} pada pohon DOM) dari simpul tersebut ke bagian belakang antrean.
+\end{enumerate}
+
+Penggunaan algoritma BFS sangat optimal untuk mencari elemen terdekat dari titik awal pencarian (\textit{shortest path}). Dalam konteks penelusuran pohon DOM halaman web, BFS akan memeriksa seluruh elemen saudara (\textit{sibling}) pada hierarki yang sama terlebih dahulu sebelum memeriksa elemen anak (\textit{descendant}) yang letaknya bersarang lebih dalam.
+
+\vspace{0.3cm}
+\noindent\textbf{Permisalan Cara Kerja BFS:} \\
+Sebagai analogi yang mudah dipahami, bayangkan pohon DOM sebagai sebuah struktur organisasi perusahaan yang sangat besar. Simpul akar (\verb|<html>|) adalah Direktur Utama. Di bawahnya (level 1) terdapat \verb|<head>| dan \verb|<body>| yang bertindak sebagai para Manajer. Di bawah Manajer (level 2) terdapat elemen seperti \verb|<h1>|, \verb|<p>|, atau \verb|<div>| yang bertindak sebagai Staf.
+
+Jika menggunakan BFS untuk mencari elemen tertentu (misalnya seorang Staf dengan ID tertentu), algoritma tidak akan menelusuri satu divisi secara mendalam dari Manajer langsung ke staf magang. Alih-alih, BFS akan melakukan pemeriksaan menyapu secara horizontal:
+\begin{itemize}
+    \item Bertanya kepada Direktur Utama (Level 0).
+    \item Bertanya kepada seluruh Manajer secara bergantian, dari ujung kiri ke ujung kanan (Level 1).
+    \item Jika belum ditemukan, barulah turun dan bertanya kepada seluruh Staf di semua divisi (Level 2).
+\end{itemize}
+Proses penelusuran ini ibarat riak gelombang air yang menyebar secara merata, menyapu seluruh titik pada radius terdekat sebelum meluas ke radius yang lebih jauh. Oleh karena itu, jika elemen HTML yang dicari berada di bagian luar atau tidak terlalu dalam dari \textit{root}, algoritma BFS akan menemukannya dengan sangat cepat.
+
+\subsection{Algoritma Breadth-First Search (BFS)}
+
+Algoritma \textit{Breadth-First Search} (BFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengunjungi simpul (\textit{node}) secara melebar (per level). Pencarian dimulai dari simpul awal (biasanya simpul akar atau \textit{root}) pada level $n$, kemudian mengeksplorasi seluruh simpul tetangga yang berada pada level yang sama secara berurutan, sebelum turun untuk mengunjungi simpul-simpul di level $n+1$ atau kedalaman selanjutnya. Karakteristik utama dari BFS adalah penelusuran yang memprioritaskan keluasan (\textit{breadth}) tingkat hierarki daripada kedalaman (\textit{depth}) cabang.
+
+Dalam implementasinya, algoritma BFS beroperasi menggunakan struktur data antrean (\textit{Queue}) yang mengedepankan prinsip \textit{First-In-First-Out} (FIFO). Cara kerja sistematis algoritma ini adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam antrean.
+    \item Lakukan perulangan selama antrean tidak kosong: ambil (keluarkan) simpul dari elemen terdepan (\textit{front}) antrean tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{enqueue}) seluruh simpul tetangga yang terhubung langsung dengan simpul tersebut ke bagian belakang antrean.
+\end{enumerate}
+
+Penggunaan algoritma BFS sangat optimal untuk mencari lintasan terpendek (\textit{shortest path}). Dalam konteks penelusuran graf, BFS akan memeriksa seluruh simpul tetangga secara merata sebelum menyusuri lintasan yang jaraknya lebih jauh dari simpul awal.
+
+\vspace{0.3cm}
+\noindent\textbf{Contoh Penelusuran BFS pada Graf:} \\
+Misalkan terdapat sebuah pohon graf dengan simpul awal adalah \textbf{A} yang bertindak sebagai \textit{root}. Simpul A terhubung ke simpul \textbf{B} dan \textbf{C}. Simpul B memiliki anak \textbf{D} dan \textbf{E}, sedangkan simpul C memiliki anak \textbf{F}. Terakhir, simpul E terhubung ke simpul \textbf{G}. Jika BFS digunakan untuk mencari simpul G dimulai dari simpul A, alur kunjungannya adalah sebagai berikut:
+\begin{itemize}
+    \item \textbf{Level 0:} Algoritma mengevaluasi simpul \textbf{A}. Karena bukan target, tetangganya (B dan C) dimasukkan ke dalam antrean.
+    \item \textbf{Level 1:} Mengambil \textbf{B} dari antrean (memasukkan D dan E), lalu mengambil \textbf{C} dari antrean (memasukkan F).
+    \item \textbf{Level 2:} Mengambil \textbf{D} (tidak ada anak), lalu mengambil \textbf{E} (memasukkan G), dan mengambil \textbf{F} (tidak ada anak).
+    \item \textbf{Level 3:} Mengambil \textbf{G} dari antrean. Target ditemukan dan pencarian selesai.
+\end{itemize}
+Urutan evaluasi simpul yang dikunjungi BFS secara keseluruhan adalah: \textbf{A $\rightarrow$ B $\rightarrow$ C $\rightarrow$ D $\rightarrow$ E $\rightarrow$ F $\rightarrow$ G}. Dapat dilihat bahwa graf ditelusuri secara berlapis, menyelesaikan satu kedalaman sebelum berpindah ke kedalaman berikutnya.
+
+\subsection{Algoritma Depth-First Search (DFS)}
+
+Algoritma \textit{Depth-First Search} (DFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengeksplorasi sedalam mungkin di sepanjang setiap cabang sebelum melakukan proses mundur (\textit{backtracking}). Pencarian dimulai dari simpul awal (\textit{root}), lalu dilanjutkan dengan memprioritaskan kunjungan ke simpul anak (biasanya yang paling kiri atau berdasarkan prioritas tertentu) terus ke bawah hingga mencapai simpul daun (\textit{leaf node}) terdalam atau simpul tak bertetangga. Karakteristik utama dari DFS adalah penelusuran yang memprioritaskan kedalaman (\textit{depth}) lintasan daripada keluasan (\textit{breadth}) level cabang.
+
+Dalam implementasinya, algoritma DFS beroperasi menggunakan struktur data tumpukan (\textit{Stack}) yang mengedepankan prinsip \textit{Last-In-First-Out} (LIFO), atau diimplementasikan secara elegan menggunakan mekanisme rekursi. Cara kerja sistematis algoritma ini (versi iteratif dengan \textit{Stack}) adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam tumpukan (\textit{stack}).
+    \item Lakukan perulangan selama tumpukan tidak kosong: ambil (keluarkan) simpul dari elemen teratas (\textit{top}) tumpukan tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{push}) seluruh simpul tetangga yang belum dikunjungi dari simpul tersebut ke bagian atas tumpukan. 
+    \item Jika sebuah jalur telah dieksplorasi hingga ke ujung dan target belum ditemukan, algoritma akan \textit{backtrack} (mundur) dan melanjutkan proses pencarian dari persimpangan cabang sebelumnya yang simpulnya masih tersimpan di dalam tumpukan.
+\end{enumerate}
+
+Penggunaan algoritma DFS sangat optimal untuk mengeksplorasi graf yang memiliki kedalaman ekstrem atau untuk mencari keberadaan lintasan tertentu tanpa harus memperlebar pencarian di memori.
+
+\vspace{0.3cm}
+\noindent\textbf{Contoh Penelusuran DFS pada Graf:} \\
+Menggunakan graf yang sama: simpul A terhubung ke B dan C; simpul B ke D dan E; simpul C ke F; dan simpul E ke G. Jika algoritma DFS digunakan untuk mencari simpul F dari simpul A (dengan asumsi penelusuran memprioritaskan cabang paling kiri terlebih dahulu), alur kunjungannya adalah sebagai berikut:
+\begin{itemize}
+    \item \textbf{Langkah 1:} Mulai dari simpul \textbf{A}. Lanjutkan penelusuran langsung ke cabang kiri, yaitu simpul \textbf{B}.
+    \item \textbf{Langkah 2:} Dari B, teruskan kembali ke cabang kiri sedalam mungkin, yaitu simpul \textbf{D}.
+    \item \textbf{Langkah 3:} Simpul D adalah daun (tidak memiliki anak). Algoritma mundur (\textit{backtrack}) ke simpul B, lalu menelusuri cabang B yang belum dikunjungi, yaitu simpul \textbf{E}.
+    \item \textbf{Langkah 4:} Dari E, algoritma kembali turun menyusuri kedalaman menuju simpul \textbf{G}.
+    \item \textbf{Langkah 5:} Simpul G adalah daun. Algoritma \textit{backtrack} berulang kali: naik ke E, naik ke B, hingga kembali ke titik awal \textbf{A}. 
+    \item \textbf{Langkah 6:} Dari A, algoritma baru berpindah ke cabang kanannya yang belum tereksplorasi, yaitu simpul \textbf{C}. Dari C, turun ke simpul \textbf{F}. Target ditemukan.
+\end{itemize}
+Urutan evaluasi simpul yang dikunjungi DFS secara keseluruhan adalah: \textbf{A $\rightarrow$ B $\rightarrow$ D $\rightarrow$ E $\rightarrow$ G $\rightarrow$ C $\rightarrow$ F}. Dapat dilihat bahwa DFS menukik tajam secara vertikal hingga ke dasar suatu cabang, sebelum berbalik untuk mengeksplorasi cabang lainnya.
+\subsection{Web Scraping dan Parsing}
+
+\textit{Web scraping}, atau ekstraksi data web, adalah sebuah proses pengambilan data mentah dari suatu situs web secara otomatis. Proses ini beroperasi dengan cara mengirimkan permintaan HTTP (\textit{HTTP request}) ke sebuah URL tertentu. Sebagai respons atas permintaan tersebut, peladen (\textit{server}) web akan mengembalikan konten halaman web yang umumnya berformat HTML. Konten HTML mentah ini memuat berbagai informasi berharga, seperti teks, gambar, tautan, hingga tabel data. Namun, data tersebut masih tertanam di dalam berbagai tag HTML sehingga sulit untuk diekstraksi dan dianalisis dalam bentuk mentahnya. Pendekatan \textit{scraping} ini sangat krusial dalam mengumpulkan dataset berskala besar yang lazim digunakan untuk kebutuhan riset pasar, pemantauan harga, pengumpulan daftar properti, hingga pengumpulan artikel berita. 
+
+Dalam praktiknya, proses \textit{data scraping} difasilitasi oleh berbagai pustaka dan kerangka kerja pemrograman untuk otomatisasi. Beberapa perangkat yang umum digunakan antara lain Scrapy, sebuah kerangka kerja yang fleksibel untuk membangun \textit{web crawlers}; Selenium, yang mampu menyimulasikan interaksi pengguna pada \textit{browser} sehingga sangat efektif untuk melakukan \textit{scraping} pada situs web dinamis berbasis JavaScript; serta pustaka seperti Requests-HTML. Selain itu, terdapat pula berbagai platform \textit{scraper} otomatis (seperti Bright Data, Octoparse, atau Diffbot) yang memungkinkan ekstraksi data tanpa penulisan kode tambahan.
+
+Karena data hasil \textit{scraping} umumnya berupa dokumen HTML yang tidak terstruktur, tahapan selanjutnya yang mutlak diperlukan adalah \textit{Data Parsing} (penguraian data). \textit{Parsing} merupakan proses analisis dan konversi data mentah tak terstruktur menjadi format struktur data yang lebih rapi dan siap untuk diproses lebih lanjut, seperti JSON, XML, atau CSV. Dalam konteks pengolahan web, \textit{parsing} berfokus pada penguraian struktur dokumen HTML untuk mengekstraksi potongan informasi yang spesifik—misalnya mengambil teks dari tag judul (\textit{title}), isi paragraf, atau atribut dari sebuah elemen. 
+
+Proses \textit{parsing} tidak sekadar mengambil data, melainkan mengatur data tersebut berdasarkan hierarki pohon dokumen agar dapat disimpan di basis data atau dianalisis. Proses ini umumnya mengandalkan perangkat pengurai (\textit{parser}) seperti BeautifulSoup pada bahasa Python, yang memungkinkan penelusuran struktur pohon HTML secara efisien untuk menemukan dan mengekstrak elemen yang bermakna. Di luar Python, terdapat pula pustaka seperti Jsoup pada Java, maupun pemanfaatan Ekspresi Reguler (\textit{Regular Expressions}) untuk menangkap pola teks yang lebih kompleks dari data mentah. Secara keseluruhan, kombinasi antara \textit{web scraping} dan \textit{HTML parsing} membentuk sebuah alur kerja integral dalam menangani data web, memproses data formulir, hingga mengolah respons API.
+
+% ========================
+% BAB 3
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 3} \\
+    \vspace{0.2cm}
+    \Large\textbf{APLIKASI BFS DAN DFS}
+\end{center}
+\addcontentsline{toc}{section}{BAB 3: Aplikasi BFS dan DFS}
+\setcounter{section}{3}
+\setcounter{subsection}{0}
+
+\subsection{Representasi Pohon DOM pada Program}
+
+Sebelum algoritma penelusuran seperti BFS dan DFS dapat dioperasikan, dokumen HTML mentah harus diterjemahkan terlebih dahulu ke dalam bentuk struktur data pohon yang dapat dipahami oleh program. Pada aplikasi ini, setiap elemen HTML direpresentasikan secara individual sebagai sebuah objek bernama \texttt{DomNode}. Pemilihan representasi berbasis objek ini didasari oleh kebutuhan untuk menyimpan berbagai atribut yang melekat pada setiap elemen HTML secara rapi dan terstruktur.
+
+Setiap objek \texttt{DomNode} menyimpan beberapa informasi esensial. Pertama, terdapat sebuah identifikator unik (\texttt{Id}) yang membedakan setiap simpul (\textit{node}) di dalam pohon, misalnya \texttt{"node-1"} atau \texttt{"node-42"}. Kedua, nama tag HTML (\texttt{TagName}) yang mencerminkan jenis elemen aslinya, seperti \verb|div|, \verb|span|, atau \verb|p|. Ketiga, atribut \textit{id} HTML (\texttt{ElementId}) beserta daftar kelas CSS (\texttt{Classes}) yang nantinya akan menjadi kunci utama dalam proses pencocokan \textit{selector}. Keempat, terdapat daftar simpul anak (\texttt{Children}) yang mendefinisikan hubungan hierarkis antar-elemen layaknya ranting pada sebuah pohon. Kelima, informasi kedalaman (\texttt{Depth}) yang menunjukkan seberapa jauh jarak simpul tersebut dari akar (\textit{root}), di mana simpul akar selalu memiliki nilai kedalaman nol. Selain itu, setiap simpul juga dibekali dengan \textit{array} untuk \textit{binary lifting} (\texttt{Up}) berukuran 20, yang dipersiapkan untuk mendukung operasi kueri \textit{Lowest Common Ancestor} (LCA) secara efisien.
+
+Proses konversi dari teks HTML mentah menjadi pohon \texttt{DomNode} ini dilakukan oleh komponen \textit{parser} yang memanfaatkan pustaka \texttt{HtmlAgilityPack}. Pustaka ini membaca dokumen secara berurutan, mengenali setiap tag dan atributnya, lalu menyusunnya ke dalam hierarki pohon yang utuh. Setiap kali sebuah tag ditemukan, program akan menginstansiasi objek \texttt{DomNode} baru dan merangkainya dengan simpul induk (\textit{parent}) melalui daftar \texttt{Children}. Hasil akhir dari tahapan \textit{parsing} ini adalah sebuah pohon DOM yang sepenuhnya merepresentasikan struktur dokumen situs web, siap untuk dijelajahi oleh algoritma pencarian.
+
+\subsection{Mekanisme Pencocokan CSS Selector}
+
+Sebagai jembatan antara penelusuran graf dan pencarian elemen, aplikasi membutuhkan sebuah mekanisme untuk menentukan apakah suatu simpul merupakan target yang sedang dicari, maka diperlukannya fungsi pengecekan \texttt{SelectorMatcher}, yang berfungsi mengevaluasi kecocokan antara sebuah simpul \texttt{DomNode} dengan CSS \textit{Selector} yang dimasukkan oleh pengguna.
+
+Mekanisme pencocokan ini bekerja dengan mendeteksi karakter awalan dari \textit{string selector}. Jika \textit{selector} diawali dengan karakter pagar (\verb|#|), maka evaluasi difokuskan pada atribut \textit{id}.  Misalkan, \verb|#header| akan mencari simpul yang nilai \texttt{ElementId}-nya adalah \texttt{"header"}. Jika diawali dengan karakter titik (\verb|.|), maka pencocokan dilakukan pada atribut kelas, contoh \verb|.container| akan menyaring simpul yang memuat \texttt{"container"} di dalam daftar \texttt{Classes}-nya. Namun, apabila \textit{selector} tidak memiliki karakter awalan khusus, program akan mencocokkannya langsung dengan nama tag HTML aslinya---seperti \verb|div| yang akan menargetkan semua simpul bertag \verb|<div>|. Agar lebih fleksibel, seluruh proses evaluasi ini dirancang bersifat \textit{case-insensitive} (tidak membedakan huruf besar dan kecil), sehingga input seperti \verb|DIV| maupun \verb|div| akan memberikan hasil yang sama.
+
+Komponen \texttt{SelectorMatcher} inilah yang akan selalu dipanggil oleh fungsi kunjungan (\textit{visit function}) setiap kali algoritma BFS atau DFS singgah di sebuah simpul. Dengan pola arsitektur ini, alur kerja menjadi sangat terintegrasi: algoritma penelusuran mengambil peran dalam memandu \textit{rute} perjalanan, sedangkan \texttt{SelectorMatcher} mengambil keputusan apakah simpul di ujung rute tersebut adalah data yang \textit{valid}.
+
+\subsection{Cara Kerja Algoritma BFS pada Program}
+
+Penerapan \textit{Breadth-First Search} (BFS) dalam aplikasi ini menerapakan konsep dasar dari BFS itu sendiri, namun juga membuatkan juga memanfaatkan potensi \textit{multithreading} yang ada pada \textit{framework} .NET. Logika algoritma ini dibungkus di dalam kelas \texttt{BfsAlgorithm} melalui metode \texttt{ExecuteParallel}. Metode ini menerima empat parameter utama: simpul akar pohon DOM, fungsi aksi kunjungan, batas maksimal pencarian (opsional), serta koleksi data \textit{thread-safe} untuk menampung elemen yang berhasil dicocokkan.
+
+Penelusuran diinisiasi dengan memasukkan simpul akar ke dalam sebuah antrean bertipe \texttt{ConcurrentQueue}, yaitu varian struktur data antrean yang dijamin aman (\textit{thread-safe}) meskipun diakses oleh banyak \textit{thread} secara bersamaan. Setelah itu, algoritma akan masuk ke dalam putaran perulangan utama yang terus mengeksekusi data selama antrean tidak kosong dan target kuota hasil belum terpenuhi.
+
+Pada setiap iterasinya, algoritma akan menghitung total simpul yang ada pada kedalaman level saat ini. Seluruh simpul tersebut kemudian dikeluarkan dari antrean secara serentak dan disimpan ke dalam sebuah daftar sementara. Tujuan pemisahan ini sangat strategis: agar seluruh simpul pada level yang sama dapat dieksekusi secara \textbf{paralel} menggunakan perintah \texttt{Parallel.ForEach}. Artinya, jika sebuah level pada pohon DOM memiliki ratusan elemen, beban pemeriksaannya dapat didistribusikan ke berbagai inti prosesor secara serentak.
+
+Di dalam blok pemrosesan paralel tersebut, setiap \textit{thread} bertugas menjalankan fungsi kunjungan pada simpul bagiannya. Fungsi ini akan mencatat riwayat kunjungan, mencocokkan \textit{selector}, dan mengamankan data ke dalam daftar hasil jika kriteria terpenuhi. Terakhir, seluruh anak (\textit{children}) dari simpul tersebut dimasukkan kembali ke antrean untuk dipersiapkan pada pemrosesan level berikutnya.
+
+Untuk menjaga efisiensi, aplikasi ini juga mengadopsi mekanisme penghentian dini (\textit{early termination}). Setiap kali fungsi kunjungan berjalan, program akan secara ketat memantau apakah kuota \texttt{maxResults} sudah tercapai. Jika sudah, pemrosesan paralel akan langsung diinterupsi menggunakan perintah \texttt{state.Stop()} dan putaran utama dihentikan melalui \texttt{break}. Fitur ini mencegah algoritma membuang-buang daya komputasi untuk menelusuri sisa pohon yang sudah tidak lagi relevan.
+
+\subsection{Cara Kerja Algoritma DFS pada Program}
+
+Penerapan algoritma \textit{Depth-First Search} (DFS) dalam aplikasi ini, yaitu dengan menelusuri satu cabang hingga ke titik terdalamnya sebelum melangkah mundur dan mencoba percabangan lain. Implementasi algoritma ini diatur di dalam kelas \texttt{DfsAlgorithm} melalui metode \texttt{ExecuteParallel}.
+
+Alih-alih menggunakan pemanggilan fungsi rekursif yang sering dicontohkan dalam buku teks, program ini membangun DFS secara iteratif dengan memanfaatkan \texttt{ConcurrentStack}. Keputusan arsitektural ini diambil dengan dua pertimbangan: pertama, untuk meminimalisasi risiko \textit{stack overflow} yang rentan terjadi ketika menghadapi pohon DOM dengan tingkat kedalaman yang ekstrem; dan kedua, untuk memberikan ruang kontrol yang lebih eksplisit terhadap alur penelusuran.
+
+Langkah pertama dimulai dengan menyisipkan simpul akar ke dalam tumpukan. Pada setiap putaran, simpul yang berada di posisi paling atas (\textit{top}) akan dikeluarkan (\textit{pop}) dan diproses. Proses pemeriksaan ini dieksekusi secara asinkron memanfaatkan \texttt{Parallel.Invoke}, yang memungkinkan fungsi kunjungan berjalan efisien tanpa harus membekukan alur utama program. Begitu simpul selesai diperiksa, seluruh anak dari simpul tersebut akan didorong masuk ke dalam tumpukan.
+
+Ada satu detail teknis yang sangat krusial di sini: proses pendorongan (\textit{push}) anak-anak simpul ke dalam tumpukan sengaja dilakukan secara \textbf{terbalik} (dari anak terakhir hingga anak pertama). Pendekatan ini merupakan konsekuensi logis dari sifat tumpukan yang berprinsip \textit{Last-In-First-Out} (LIFO). Dengan menempatkan anak pertama di urutan terakhir, anak tersebut otomatis akan menduduki posisi puncak tumpukan dan dievaluasi lebih dulu pada putaran berikutnya. Trik matematis ini menjamin urutan penelusuran tetap mengalir dari kiri ke kanan (\textit{left-to-right}), persis seperti perilaku standar DFS.
+
+Berbeda dengan BFS yang memparalelkan eksekusi berdasarkan sekumpulan simpul dalam satu level, paralelisasi pada DFS bersifat lebih sempit. Pemanggilan \texttt{Parallel.Invoke} hanya mengisolasi eksekusi fungsi kunjungan pada satu simpul tunggal, sementara mekanisme perpindahan tumpukannya tetap berjalan secara berurutan. Meskipun percepatan komputasinya tidak sesignifikan BFS, strategi ini memastikan bahwa kaidah penelusuran kedalaman (\textit{depth-first}) tidak rusak oleh perlombaan proses (\textit{race condition}). Sama halnya dengan BFS, fitur terminasi dini juga diterapkan secara ketat pada DFS agar proses dapat langsung diakhiri saat target jumlah hasil telah tercapai.
+
+\subsection{Pseudocode Algoritma}
+
+\subsubsection{Pseudocode BFS}
+\begin{algorithm}[H]
+\caption{BFS dengan Paralelisasi per Level pada Pohon DOM}
+\label{alg:bfs}
+\begin{algorithmic}[1]
+\Procedure{BFS-Parallel}{$root, visitAction, maxResults, matches$}
+    \State $queue \gets$ \textsc{NewConcurrentQueue}()
+    \State $queue$.\textsc{Enqueue}($root$)
+    \While{$queue$ tidak kosong}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{break}
+        \EndIf
+        \State $levelSize \gets |queue|$
+        \State $currentLevel \gets$ daftar kosong
+        \For{$i \gets 1$ \textbf{to} $levelSize$}
+            \State $node \gets queue$.\textsc{Dequeue}()
+            \State $currentLevel$.\textsc{Add}($node$)
+        \EndFor
+        \ForAll{$node \in currentLevel$ \textbf{secara paralel}} \Comment{Parallel.ForEach}
+            \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+                \State Hentikan pemrosesan paralel
+                \State \textbf{continue}
+            \EndIf
+            \State \textsc{VisitAction}($node$) \Comment{Catat kunjungan \& cek selector}
+            \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+                \State Hentikan pemrosesan paralel
+            \EndIf
+            \ForAll{$child \in node.Children$}
+                \State $queue$.\textsc{Enqueue}($child$)
+            \EndFor
+        \EndFor
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode DFS}
+
+\begin{algorithm}[H]
+\caption{DFS Iteratif dengan Stack pada Pohon DOM}
+\label{alg:dfs}
+\begin{algorithmic}[1]
+\Procedure{DFS-Parallel}{$root, visitAction, maxResults, matches$}
+    \State $stack \gets$ \textsc{NewConcurrentStack}()
+    \State $stack$.\textsc{Push}($root$)
+    \While{$stack$ tidak kosong}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{break}
+        \EndIf
+        \State $node \gets stack$.\textsc{Pop}()
+        \State Jalankan secara paralel: \Comment{Parallel.Invoke}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{continue}
+        \EndIf
+        \State \textsc{VisitAction}($node$) \Comment{Catat kunjungan \& cek selector}
+        \If{$node.Children \neq \text{null}$}
+            \For{$i \gets |node.Children| - 1$ \textbf{downto} $0$} \Comment{Push terbalik}
+                \State $stack$.\textsc{Push}($node.Children[i]$)
+            \EndFor
+        \EndIf
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode Pencocokan Selector}
+\begin{algorithm}[H]
+\caption{Pencocokan CSS Selector pada Simpul DOM}
+\label{alg:matcher}
+\begin{algorithmic}[1]
+\Function{Matches}{$node, selector$}
+    \If{$selector$ kosong}
+        \State \Return \textbf{false}
+    \EndIf
+    \If{$selector$ diawali \texttt{'\#'}}
+        \State \Return $node.ElementId = selector[1..]$ \Comment{ID Selector}
+    \ElsIf{$selector$ diawali \texttt{'.'}}
+        \State $targetClass \gets selector[1..]$
+        \State \Return $targetClass \in node.Classes$ \Comment{Class Selector}
+    \Else
+        \State \Return $node.TagName = selector$ \Comment{Tag Selector}
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode Fungsi Kunjungan}
+\begin{algorithm}[H]
+\caption{Fungsi Kunjungan Simpul (LogVisit)}
+\label{alg:logvisit}
+\begin{algorithmic}[1]
+\Procedure{LogVisit}{$node$}
+    \State $nodesVisited \gets nodesVisited + 1$ \Comment{Penambahan atomik}
+    \State $maxDepth \gets \max(maxDepth, node.Depth)$ \Comment{Pembaruan atomik}
+    \State $traversalPath$.\textsc{Enqueue}($node.Id$)
+    \State $traversalLog$.\textsc{Enqueue}(\texttt{"Mengunjungi <"} $+ node.TagName +$ \texttt{">"})
+    \If{\textsc{Matches}($node, selector$)}
+        \State $matchedNodes$.\textsc{Add}($node$)
+        \State $traversalLog$.\textsc{Enqueue}(\texttt{"[MATCH] ditemukan"})
+    \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Analisis Kompleksitas Waktu}
+
+\subsubsection{Kompleksitas Waktu BFS}
+
+Pada skenario terburuk (\textit{worst case}), misalnya ketika elemen yang dicari sama sekali tidak ada atau tidak ada batasan kuota \texttt{maxResults}, algoritma BFS terpaksa harus mengunjungi seluruh $n$ simpul. Pada setiap persinggahan, program melakukan operasi antrean (\textit{enqueue} dan \textit{dequeue}) yang memakan waktu konstan $O(1)$, serta mengevaluasi kecocokan \textit{selector} yang secara praktis juga beroperasi pada kecepatan $O(1)$. Berdasarkan perhitungan tersebut, waktu eksekusi sekuensial (linier) dari BFS adalah:
+\[
+T_{BFS}(n) = O(n)
+\]
+
+Saat \textit{multithreading} dilibatkan. Dengan memanfaatkan \texttt{Parallel.ForEach}, beban komputasi dapat didistribusikan. Jika sistem memiliki $p$ buah \textit{thread} yang siap bekerja dan sebuah level ke-$i$ memuat $n_i$ simpul, maka waktu penyelesaian level tersebut dapat dipangkas menjadi $O(n_i / p)$. Bila diakumulasikan secara ideal, waktu komputasinya menyusut menjadi:
+\[
+T_{BFS\text{-}parallel} = O\!\left(\sum_{i=0}^{d} \frac{n_i}{p}\right) = O\!\left(\frac{n}{p}\right)
+\]
+Di dunia nyata, rasio percepatan ini memang tidak murni linear karena akan selalu ada \textit{overhead} sistem untuk sinkronisasi \textit{thread}. Namun pada halaman web dengan struktur DOM yang kaya akan elemen sebaya (lebar), pemangkasan waktu ini tetap akan sangat terasa.
+
+\subsubsection{Kompleksitas Waktu DFS}
+
+Dalam perhitungan sekuensial, nasib DFS serupa dengan BFS. Algoritma akan melangkah satu per satu menyambangi $n$ simpul pada skenario terburuk, melakukan operasi tumpukan (\textit{push} dan \textit{pop}) dengan kompleksitas $O(1)$. Maka:
+\[
+T_{DFS}(n) = O(n)
+\]
+
+Meskipun DFS pada aplikasi ini juga diinjeksi dengan \texttt{Parallel.Invoke}, dampak percepatannya jauh lebih konservatif. Hal ini terjadi karena proses utama yang mengatur alur perjalanan di dalam tumpukan tetap berjalan seperti kendaraan di jalur tunggal (sekuensial). Paralelisasi di sini hanya berlaku pada durasi pemrosesan internal tiap simpul, bukan pada rute perjalanannya. Akibatnya, estimasi waktunya secara keseluruhan tetap berpijak pada kisaran:
+\[
+T_{DFS\text{-}parallel} \approx O(n)
+\]
+
+\subsubsection{Perbandingan Waktu BFS dan DFS}
+Berdasarkan perbandingan waktu pada algoritma BFS dan DFS, algoritma BFS dan DFS memiliki kompleksitas waktu yang sama secara sekuensial, yaitu  $O(n)$. Namun, pada saat algoritma dapat melakukan \textit{multithreading}, algoritma BFS memiliki kompleksitas yang jauh lebih baik dari pada algoritma DFS.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspek} & \textbf{BFS} & \textbf{DFS} \\ \hline
+Kompleksitas waktu (sekuensial) & $O(n)$ & $O(n)$ \\ \hline
+Kompleksitas waktu (paralel) & $O(n/p)$ & $\approx O(n)$ \\ \hline
+Efisiensi terminasi dini (elemen dangkal) & Tinggi & Rendah \\ \hline
+Efisiensi terminasi dini (elemen dalam) & Rendah & Tinggi \\ \hline
+\end{tabular}
+\caption{Perbandingan Kompleksitas Waktu BFS dan DFS}
+\label{tab:waktu}
+\end{table}
+
+\subsection{Analisis Kompleksitas Ruang (Memori)}
+
+\subsubsection{Kompleksitas Ruang BFS}
+
+Arsitektur BFS mewajibkannya untuk menyimpan seluruh simpul dari level yang sedang aktif beserta calon anak-anaknya secara bersamaan di dalam antrean. Jumlah data ini berkorelasi langsung dengan seberapa "lebar" wujud pohon tersebut.
+
+Pada kasus paling parah, di mana pohon berbentuk sangat rata dan melebar ke samping (dengan faktor percabangan $b$), level terbawah akan dijejali oleh $O(b^d)$ simpul. Kebutuhan memori BFS didefinisikan sebagai:
+\[
+S_{BFS} = O(w)
+\]
+di mana $w$ mewakili rekor jumlah simpul terbanyak di satu level tertentu. Jika struktur DOM sangat dangkal namun berjejer panjang, nilai $w$ bisa membengkak mendekati total elemen $O(n)$.
+
+\subsubsection{Kompleksitas Ruang DFS}
+
+Arsitektur DFS memiliki ikatan memori dengan tingkat kedalaman (\textit{depth}) pohon. Tumpukan data pada DFS dirancang secara efisien untuk hanya "mengingat" jalan pulang dari simpul yang sedang ia pijak saat ini, beserta beberapa pintu persimpangan (\textit{sibling}) yang belum sempat ia buka.
+
+Jika direpresentasikan dalam rumus, untuk pohon sedalam $d$ dengan faktor cabang $b$, tumpukan DFS hanya akan menanggung beban sekitar $b - 1$ simpul simpangan di setiap lapisan yang dilewatinya. Alhasil, batas maksimum memorinya adalah:
+\[
+S_{DFS} = O(b \cdot d)
+\]
+
+\subsubsection{Perbandingan Memori BFS dan DFS}
+
+Bedasarkan perbandingan memori pada algoritma BFS dan DFS, arsitektur BFS memiliki kompleksitas memori yang sangat besar, yaitu mendekati  total elemen $O(n)$. Sedangkan arsitektur DFS memiliki kompleksitas memori yang sangat cukup, yaitu hingga tingkat kedalaman pohon, yaitu $O(b.d)$ dengan pohon sedalam \textit{d} dengan faktor cabang \textit{b} 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspek} & \textbf{BFS} & \textbf{DFS} \\ \hline
+Struktur data utama & \texttt{ConcurrentQueue} & \texttt{ConcurrentStack} \\ \hline
+Kompleksitas ruang (umum) & $O(w)$ & $O(b \cdot d)$ \\ \hline
+Kompleksitas ruang (terburuk) & $O(n)$ & $O(n)$ \\ \hline
+Pohon lebar \& dangkal & Boros memori & Hemat memori \\ \hline
+Pohon sempit \& dalam & Hemat memori & Hemat memori \\ \hline
+Pohon DOM tipikal & Moderat & Hemat \\ \hline
+\end{tabular}
+\caption{Perbandingan Kompleksitas Ruang BFS dan DFS}
+\label{tab:memori}
+\end{table}
+
+
+% ========================
+% BAB 4
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 4} \\
+    \vspace{0.2cm}
+    \Large\textbf{IMPLEMENTASI DAN PENGUJIAN}
+\end{center}
+\addcontentsline{toc}{section}{BAB 4: Implementasi dan Pengujian}
+\setcounter{section}{4}
+\setcounter{subsection}{0}
+
+\subsection{Lingkungan Pengembangan}
+Proyek ini dikembangkan dengan membaginya menjadi dua komponen utama, yaitu \textit{frontend} dan \textit{backend}. Komponen \textit{frontend} bertugas untuk menyajikan antarmuka pengguna, menerima masukan berupa tautan (URL) maupun kode sumber HTML, serta menampilkan visualisasi pohon DOM dari hasil masukan tersebut. 
+
+Sementara itu, komponen \textit{backend} bertugas memproses permintaan dari pengguna. Jika pengguna memberikan tautan, \textit{backend} akan melakukan \textit{scraping} untuk mengambil kode sumber HTML. Kode tersebut kemudian melewati proses \textit{parsing} untuk diubah menjadi struktur pohon DOM. Selanjutnya, \textit{backend} juga mengeksekusi algoritma pencarian elemen berdasarkan CSS \textit{selector}, baik menggunakan pendekatan \textit{Breadth-First Search} (BFS) maupun \textit{Depth-First Search} (DFS).
+
+Secara teknis, \textit{frontend} dibangun menggunakan \textit{framework} React yang berbasis JavaScript. Di sisi lain, \textit{backend} dikembangkan menggunakan bahasa pemrograman C\# di atas \textit{framework} .NET dari Microsoft.
+
+\subsection{Antarmuka Pengguna (UI)}
+[Tangkapan layar (screenshot) aplikasi dan penjelasan fungsi tombol/input.]
+
+\subsection{Hasil Pengujian}
+\begin{itemize}
+    \item \textbf{Skenario 1:} Pencarian dengan ID unik.
+    \item \textbf{Skenario 2:} Pencarian dengan Class yang tersebar di berbagai level.
+    \item \textbf{Skenario 3:} Perbandingan waktu eksekusi BFS vs DFS pada situs web yang kompleks.
+\end{itemize}
+
+\subsection{Analisis Hasil Traversal Log}
+[Menampilkan contoh log jalur yang ditempuh oleh masing-masing algoritma untuk mencapai target yang sama.]
+
+% ========================
+% BAB 5
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 5} \\
+    \vspace{0.2cm}
+    \Large\textbf{KESIMPULAN DAN SARAN}
+\end{center}
+\addcontentsline{toc}{section}{BAB 5: Kesimpulan dan Saran}
+\setcounter{section}{5}
+\setcounter{subsection}{0}
+
+\subsection{Kesimpulan}
+[Rangkuman mengenai algoritma mana yang lebih efisien untuk kasus tertentu berdasarkan hasil pengujian di Bab 4.]
+
+\subsection{Saran}
+[Masukan untuk pengembangan aplikasi di masa depan, misal penambahan fitur atau optimasi memori.]
+
+\newpage
+\appendix
+
+% ========================
+% LAMPIRAN
+% ========================
+\section{Lampiran}
+
+\subsection{Tautan Repositori GitHub dan Video}
+\textbf{Repositori GitHub:} \href{https://github.com/Alpaomega1136/Tubes2_e621.git}{https://github.com/Alpaomega1136/Tubes2_e621.git} \\
+\textbf{Video Demo:} \href{https://link-video.com}{https://link-video.com} 
+
+
+\subsection{Tabel Checklist Kelengkapan}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|p{10cm}|c|c|}
+\hline
+\textbf{No} & \textbf{Poin} & \textbf{Ya} & \textbf{Tidak} \\ \hline
+1 & Aplikasi berhasil di kompilasi tanpa kesalahan & $\checkmark$ & \\  \hline
+2 & Aplikasi berhasil dijalankan & $\checkmark$ & \\ \hline
+3 & Aplikasi dapat menerima input URL web, pilihan algoritma, CSS selector, dan jumlah hasil & $\checkmark$ & \\ \hline
+4 & Aplikasi dapat melakukan scraping terhadap web pada input & $\checkmark$ & \\ \hline
+5 & Aplikasi dapat menampilkan visualisasi pohon DOM & $\checkmark$ & \\ \hline
+6 & Aplikasi dapat menelusuri pohon DOM dan menampilkan hasil penelusuran & $\checkmark$ & \\ \hline
+7 & Aplikasi dapat menandai jalur tempuh oleh algoritma & $\checkmark$ & \\ \hline
+8 & Aplikasi dapat menyimpan jalur yang ditempuh algoritma dalam traversal log & $\checkmark$ & \\ \hline
+9 & [Bonus] Membuat video & & \\ \hline
+10 & [Bonus] Deploy aplikasi & & \\ \hline
+11 & [Bonus] Implementasi animasi pada penelusuran pohon & $\checkmark$ & \\ \hline
+12 & [Bonus] Implementasi multithreading & $\checkmark$ & \\ \hline
+13 & [Bonus] Implementasi LCA Binary Lifting & $\checkmark$ & \\ \hline
+\end{tabular}
+\end{table}
+
+\vspace{1cm}
+\noindent
+\fbox{
+\begin{minipage}{0.97\linewidth}
+Tugas ini disusun sepenuhnya tanpa bantuan kecerdasan buatan
+(\textit{Generative AI}), melainkan hasil pemikiran dan analisis mandiri.
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd1.png}\\
+An-Dafa Anza Avansyah
+\end{flushright}
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd2.png}\\
+M. Haris Putra S.
+\end{flushright}
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd3.png}\\
+Raymond Jonathan Dwi Putra Julianto
+\end{flushright}
+\end{minipage}
+}
+
+\newpage
+\nocite{*}
+\bibliographystyle{plainurl}
+\addcontentsline{toc}{section}{Daftar Pustaka}
+\bibliography{cite}
+
+\end{document}\documentclass[12pt]{article}
+
+% ========================
+% PACKAGES
+% ========================
+\usepackage{graphicx}
+\usepackage{framed}
+\usepackage{alltt}
+\usepackage{amssymb}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{appendix}
+\usepackage{xurl}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
+
+% ========================
+% HEADER & FOOTER
+% ========================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{IF2211 - Strategi Algoritma}
+\fancyhead[R]{Tugas Besar 2}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\contentsname}{Daftar Isi}
+\renewcommand{\refname}{Daftar Pustaka}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codeblue}{rgb}{0.0, 0.2, 0.6}
+
+\lstdefinestyle{cppstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    numbers=left,
+    tabsize=4,
+    language=C++
+}
+
+\lstset{style=cppstyle}
+
+% ========================
+% TITLE
+% ========================
+\title{Laporan Tugas Besar 2 IF2211}
+\author{Kelompok [Nama Kelompok]}
+\date{\today}
+
+\begin{document}
+\setlength{\parskip}{6pt}
+
+% ========================
+% COVER PAGE
+% ========================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vspace*{1cm}
+{\Huge \bfseries Tugas Besar 2 IF2211 Strategi Algoritma \par}
+
+\vspace{1cm}
+{\Large IF2211 - Strategi Algoritma \par}
+\vspace{0.5cm}
+{\normalsize Pemanfaatan Algoritma BFS dan DFS dalam Mekanisme Penelusuran CSS pada Pohon DOM \par}
+\vspace{0.25cm}
+{\small Semester II tahun 2025/2026 \par}
+
+\vfill
+\includegraphics[width=0.6\textwidth]{Cover.png}
+\vspace{1cm}
+
+\vfill
+{\normalsize \textbf{Disusun oleh:} \par}
+\vspace{0.3cm}
+\begin{tabular}{ll}
+13524038 & An-Dafa Anza Avansyah \\
+13524053 & Muhammad Haris Putra Sulastianto \\
+13524059 & Raymond Jonathan Dwi Putra J \\
+\end{tabular}
+
+\vfill
+{\large
+Program Studi Teknik Informatika \par
+\vspace{0.3cm}
+Sekolah Teknik Elektro dan Informatika \par
+\vspace{0.3cm}
+Institut Teknologi Bandung \par
+\vspace{0.3cm}
+2026 \par
+}
+
+\end{titlepage}
+
+% ========================
+% BAB 1
+% ========================
+\begin{center}
+    \Large\textbf{BAB 1} \\
+    \vspace{0.2cm}
+    \Large\textbf{DESKRIPSI TUGAS}
+\end{center}
+\addcontentsline{toc}{section}{BAB 1: Deskripsi Tugas}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{gambar_1.png} 
+    \caption{Struktur Pohon DOM}
+    \vspace{0.2cm}
+    \url{https://www.geeksforgeeks.org/java/what-is-document-object-in-java-dom/}
+\end{figure}
+
+Document Object Model (DOM) merupakan representasi terstruktur dari dokumen HTML dalam bentuk \textit{tree} yang memungkinkan setiap elemen pada halaman web diakses, dimodifikasi, dan dimanipulasi oleh program. Struktur ini merepresentasikan hubungan antar elemen HTML seperti \textit{parent}, \textit{child}, dan \textit{sibling} sehingga memudahkan pengolahan dokumen secara terprogram.
+
+Struktur sebuah file HTML pada umumnya meliputi elemen \textit{root} \verb|<html>| yang berisi dua bagian utama yaitu \verb|<head>| dan \verb|<body>|. Bagian \verb|<head>| berisi metadata seperti judul halaman, \textit{link stylesheet}, dan \textit{script}, sedangkan \verb|<body>| berisi konten utama halaman seperti teks, gambar, tombol, dan elemen HTML lainnya yang ditampilkan kepada pengguna.
+
+Sebuah website menampilkan sebuah DOM melalui sebuah file bernama Cascading Style Sheets (CSS) yang bertujuan mendeklarasikan visualisasi elemen-elemen pada pohon. Deklarasi visualisasi ditempelkan pada elemen-elemen yang berkaitan melalui CSS Selector.
+
+Pada Tugas Besar 2 Strategi Algoritma ini, mahasiswa diminta untuk menelusuri dan mencari elemen pada struktur DOM berdasarkan CSS Selector tertentu dengan menggunakan algoritma penelusuran graf yaitu \textit{Breadth First Search} (BFS) dan \textit{Depth First Search} (DFS). Algoritma tersebut digunakan untuk menjelajahi struktur pohon DOM guna menemukan elemen yang sesuai dengan \textit{selector} yang diberikan.
+
+Komponen-komponen penting yang terdapat pada tugas besar ini antara lain:
+
+\begin{enumerate}
+    \item \textbf{Tags}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{gambar_2.png}
+        \caption{Struktur Syntax HTML}
+        \vspace{0.2cm}
+        \url{https://tutorial.techaltum.com/htmlTags.html}
+    \end{figure}
+    Tag pada HTML merupakan penanda (\textit{markup}) yang digunakan untuk mendefinisikan struktur dan jenis elemen dalam sebuah dokumen HTML. Tag memberi tahu \textit{browser} bagaimana suatu bagian konten harus ditafsirkan dan ditampilkan pada halaman web. Secara umum, tag HTML ditulis menggunakan tanda kurung sudut (\verb|< >|). Sebagian besar elemen HTML memiliki pasangan tag pembuka dan tag penutup. Tag pembuka menandai awal suatu elemen, sedangkan tag penutup menandai akhir elemen tersebut. Tag penutup ditulis dengan menambahkan tanda garis miring \verb|/| sebelum nama tag. Terdapat beberapa jenis tag HTML yang \textit{self-closing}. Dalam struktur DOM, setiap tag HTML direpresentasikan sebagai \textit{node} pada pohon DOM. Hubungan antar tag membentuk struktur hierarki seperti \textit{parent}, \textit{child}, dan \textit{sibling}. Struktur inilah yang memungkinkan dokumen HTML diproses sebagai sebuah pohon ketika dilakukan penelusuran menggunakan algoritma seperti BFS atau DFS.
+
+    \item \textbf{CSS Selector}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\textwidth]{gambar_3.png}
+        \caption{Visualisasi CSS Selector}
+        \vspace{0.2cm}
+        \url{https://www.reddit.com/r/webdev/comments/ur6v5m/css_selectors_visually_explained/}
+    \end{figure}
+    CSS \textit{Selector} adalah mekanisme pada CSS untuk memilih elemen HTML tertentu pada struktur DOM agar dapat diberikan aturan \textit{style}. Dengan \textit{selector}, kita dapat menentukan elemen mana yang akan dikenai aturan visual seperti warna, ukuran, atau tata letak. Beberapa \textit{selector} dasar yang umum digunakan adalah sebagai berikut: \textbf{Tag Selector} memilih elemen berdasarkan nama tag HTML (contoh: \verb|p| memilih semua elemen \verb|<p>|); \textbf{Class Selector} memilih elemen yang memiliki atribut \textit{class} tertentu, ditulis dengan tanda titik (\verb|.|) (contoh: \verb|.box|); \textbf{ID Selector} memilih elemen dengan atribut \textit{id} tertentu, ditulis dengan tanda pagar (\verb|#|) (contoh: \verb|#header|); dan \textbf{Universal Selector} memilih semua elemen HTML (contoh: \verb|*|). \textit{Combinator} merupakan cara untuk menggabungkan beberapa jenis \textit{selector} dalam penentuan elemen yang akan terpengaruh, dan terdiri dari: \textit{Child Combinator} (\verb|>|), \textit{Descendent Combinator} (\verb| |), \textit{Adjacent Sibling Combinator} (\verb|+|), dan \textit{General Sibling Combinator} (\verb|~|).
+
+    \item \textbf{HTML Parsing}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{gambar_4.png}
+        \caption{Proses Parsing Pohon HTML}
+        \vspace{0.2cm}
+        \url{https://stackoverflow.com/questions/3150293/how-does-a-parser-for-example-html-work}
+    \end{figure}
+    HTML \textit{Parsing} adalah proses membaca dokumen HTML dan mengubahnya menjadi struktur data pohon (\textit{tree}) yang merepresentasikan hubungan antar elemen HTML. Pada proses ini, \textit{parser} memproses dokumen HTML secara berurutan, mengenali tag pembuka dan tag penutup, kemudian menyusunnya ke dalam struktur hierarki. Setiap tag HTML direpresentasikan sebagai \textit{node} pada pohon. Tag yang berada di dalam tag lain akan menjadi \textit{child node}, sedangkan tag yang membungkusnya menjadi \textit{parent node}. \textit{Node} paling atas pada struktur ini disebut \textit{root}, yang umumnya merupakan elemen \verb|<html>|. Dari \textit{node root} tersebut, elemen-elemen lain seperti \verb|<head>| dan \verb|<body>| akan menjadi cabang yang membentuk struktur pohon DOM. Hasil dari proses \textit{parsing} adalah \textit{DOM Tree}, yaitu representasi pohon dari dokumen HTML yang memungkinkan elemen-elemen pada halaman web ditelusuri, diakses, dan dimanipulasi secara terstruktur. Struktur pohon ini kemudian dapat digunakan dalam proses penelusuran elemen, misalnya dengan menggunakan algoritma \textit{Breadth First Search} (BFS) atau \textit{Depth First Search} (DFS).
+\end{enumerate}
+
+% ========================
+% BAB 2
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 2} \\
+    \vspace{0.2cm}
+    \Large\textbf{LANDASAN TEORI}
+\end{center}
+\addcontentsline{toc}{section}{BAB 2: Landasan Teori}
+\setcounter{section}{2}
+\setcounter{subsection}{0}
+
+\subsection{Document Object Model (DOM)}
+
+Document Object Model (DOM) adalah antarmuka pemrograman untuk dokumen web. DOM merepresentasikan halaman sehingga program dapat mengubah struktur, gaya, dan konten dokumen, seperti HTML yang merepresentasikan halaman web. DOM merepresentasikan dokumen sebagai \textit{node} dan objek sehingga bahasa pemrograman dapat berinteraksi dengan halaman tersebut.
+
+Halaman web adalah dokumen yang dapat ditampilkan di jendela \textit{browser} atau sebagai kode sumber HTML. Dengan DOM, elemen HTML seperti paragraf, gambar, atau tombol diubah menjadi objek JavaScript yang dapat diakses dan dimodifikasi. DOM ini sebagai 'jembatan' antara kode JavaScript dan tampilan halaman web dengan menyediakan model dokumen yang memungkinkan program mengubah struktur, konten, dan gaya halaman tanpa perlu me-\textit{refresh} seluruh halaman.
+
+DOM dibangun menggunakan beberapa API yang bekerja bersama-sama. DOM inti mendefinisikan entitas yang menggambarkan setiap dokumen dan objek di dalamnya. Ini diperluas sesuai kebutuhan oleh API lain yang menambahkan fitur dan kemampuan baru ke DOM. Misalnya, API HTML DOM menambahkan dukungan untuk merepresentasikan dokumen HTML ke DOM inti, dan API SVG menambahkan dukungan untuk merepresentasikan dokumen SVG.
+
+Pohon DOM adalah struktur pohon yang simpul-simpulnya mewakili isi dokumen HTML atau XML. Setiap dokumen HTML atau XML memiliki representasi pohon DOM. Misalnya, perhatikan dokumen berikut:
+\begin{lstlisting}[language=HTML, frame=single, backgroundcolor=\color{backcolour}, basicstyle=\ttfamily\footnotesize, title=Struktur HTML]
+<html lang="en">
+  <head>
+    <title>My Document</title>
+  </head>
+  <body>
+    <h1>Header</h1>
+    <p>Paragraph</p>
+  </body>
+</html>
+\end{lstlisting}
+Struktur DOM-nya terlihat seperti ini:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Pohon_DOM.jpg}
+    \caption{Struktur DOM Hasil Parsing}
+    \vspace{0.2cm}
+    \url{https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model}
+\end{figure}
+Ketika peramban web menguraikan dokumen HTML, ia membangun pohon DOM dan kemudian menggunakannya untuk menampilkan dokumen tersebut.
+
+\subsection{CSS Selector}
+
+Cascading Style Sheets (CSS) \textit{Selector} adalah sebuah mekanisme berupa pola string yang digunakan untuk mengidentifikasi, memilih, dan mencocokkan satu atau sekumpulan elemen (simpul/\textit{node}) di dalam struktur pohon Document Object Model (DOM). Dalam konteks pengembangan web, \textit{selector} umumnya digunakan untuk menerapkan aturan visual (\textit{styling}) pada elemen HTML tertentu. Namun, dalam konteks komputasi dan \textit{web scraping}, CSS \textit{Selector} berfungsi sebagai kueri pencarian (\textit{search query}) yang sangat kuat untuk mengekstraksi data spesifik dari sebuah graf atau pohon dokumen.
+
+Secara konseptual, pencocokan CSS \textit{Selector} beroperasi dengan cara mengevaluasi atribut dari setiap simpul pada pohon DOM dan memeriksa hubungan struktural antar simpul tersebut. CSS \textit{Selector} dapat dibagi menjadi beberapa kategori dasar berdasarkan spesifisitas dan cara kerjanya, antara lain:
+
+\begin{itemize}
+    \item \textbf{Universal Selector (\verb|*|):} Memilih semua elemen di dalam dokumen DOM tanpa terkecuali. Ini setara dengan mengunjungi seluruh simpul dalam pohon tanpa memberikan filter kondisi pencocokan.
+    
+    \item \textbf{Tag/Type Selector:} Memilih elemen berdasarkan nama tag HTML aslinya. Misalnya, \textit{selector} \verb|div| akan mencocokkan semua simpul yang merupakan instansiasi dari tag \verb|<div>|.
+    
+    \item \textbf{Class Selector (\verb|.|):} Memilih elemen yang memiliki atribut kelas tertentu. Satu elemen HTML dapat memiliki beberapa kelas, dan banyak elemen dapat berbagi kelas yang sama. Penulisannya diawali dengan tanda titik, contohnya \verb|.container| akan mencocokkan elemen seperti \verb|<div class="container">|.
+    
+    \item \textbf{ID Selector (\verb|#|):} Memilih elemen berdasarkan atribut \textit{identifier} uniknya. Berdasarkan standar HTML, ID seharusnya bersifat unik di seluruh dokumen (hanya ada satu elemen per ID). Penulisannya diawali dengan tanda pagar, contohnya \verb|#header| akan mencocokkan \verb|<nav id="header">|.
+    
+    \item \textbf{Attribute Selector (\verb|[attr=value]|):} Memilih elemen berdasarkan keberadaan atribut tertentu atau nilai spesifik dari atribut tersebut, seperti \verb|[href]| atau \verb|[type="submit"]|.
+\end{itemize}
+
+Selain \textit{selector} tunggal, CSS mendukung penggunaan \textbf{Kombinator (\textit{Combinator})} untuk mendefinisikan hubungan spasial dan hierarkis antar elemen di dalam pohon DOM. Hal ini sangat relevan dengan algoritma penelusuran graf (seperti BFS dan DFS) karena kombinator mendikte jalur traversal yang sah:
+
+\begin{enumerate}
+    \item \textbf{Descendant Combinator (\textit{Spasi}):} Dinyatakan dengan karakter spasi (contoh: \verb|div p|). Kombinator ini memilih semua elemen \verb|<p>| yang merupakan keturunan (baik \textit{child} langsung maupun keturunan pada kedalaman tingkat berapa pun) dari elemen \verb|<div>|.
+    
+    \item \textbf{Child Combinator (\verb|>|):} Dinyatakan dengan tanda lebih besar (contoh: \verb|ul > li|). Berbeda dengan \textit{descendant}, kombinator ini sangat ketat secara hierarki; ia hanya memilih elemen \verb|<li>| yang merupakan anak langsung (\textit{direct child} atau bertetangga langsung dengan \textit{edge} derajat 1 ke bawah) dari \verb|<ul>|.
+    
+    \item \textbf{Adjacent Sibling Combinator (\verb|+|):} Dinyatakan dengan tanda tambah (contoh: \verb|h1 + p|). Memilih elemen \verb|<p>| yang posisinya berada tepat setelah elemen \verb|<h1>| dan memiliki \textit{parent} (simpul induk) yang sama.
+    
+    \item \textbf{General Sibling Combinator (\verb|~|):} Dinyatakan dengan tanda tilde (contoh: \verb|h1 ~ p|). Memilih semua elemen \verb|<p>| yang muncul setelah elemen \verb|<h1>| yang berada pada level hierarki (\textit{parent}) yang sama, tidak peduli apakah letaknya bersebelahan langsung atau diselingi oleh simpul lain.
+\end{enumerate}
+
+Pemahaman yang komprehensif terhadap pola struktural ini mutlak diperlukan dalam merancang mekanisme \textit{Breadth-First Search} (BFS) maupun \textit{Depth-First Search} (DFS), karena algoritma harus mampu menerjemahkan sintaks kueri ini menjadi aturan kondisional (\textit{conditional logic}) saat berpindah dari satu simpul ke simpul lainnya di dalam pohon DOM.
+
+\subsection{Algoritma Breadth-First Search (BFS)}
+
+Algoritma \textit{Breadth-First Search} (BFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengunjungi simpul (\textit{node}) secara melebar (per level). Pencarian dimulai dari simpul awal (biasanya simpul akar atau \textit{root}) pada level $n$, kemudian mengeksplorasi seluruh simpul tetangga yang berada pada level yang sama secara berurutan, sebelum turun untuk mengunjungi simpul-simpul di level $n+1$ atau kedalaman selanjutnya. Karakteristik utama dari BFS adalah penelusuran yang memprioritaskan keluasan (\textit{breadth}) tingkat hierarki daripada kedalaman (\textit{depth}) cabang.
+
+Dalam implementasinya, algoritma BFS beroperasi menggunakan struktur data antrean (\textit{Queue}) yang mengedepankan prinsip \textit{First-In-First-Out} (FIFO). Cara kerja sistematis algoritma ini adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam antrean.
+    \item Lakukan perulangan selama antrean tidak kosong: ambil (keluarkan) simpul dari elemen terdepan (\textit{front}) antrean tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{enqueue}) seluruh simpul tetangga (atau \textit{child node} pada pohon DOM) dari simpul tersebut ke bagian belakang antrean.
+\end{enumerate}
+
+Penggunaan algoritma BFS sangat optimal untuk mencari elemen terdekat dari titik awal pencarian (\textit{shortest path}). Dalam konteks penelusuran pohon DOM halaman web, BFS akan memeriksa seluruh elemen saudara (\textit{sibling}) pada hierarki yang sama terlebih dahulu sebelum memeriksa elemen anak (\textit{descendant}) yang letaknya bersarang lebih dalam.
+
+\vspace{0.3cm}
+\noindent\textbf{Permisalan Cara Kerja BFS:} \\
+Sebagai analogi yang mudah dipahami, bayangkan pohon DOM sebagai sebuah struktur organisasi perusahaan yang sangat besar. Simpul akar (\verb|<html>|) adalah Direktur Utama. Di bawahnya (level 1) terdapat \verb|<head>| dan \verb|<body>| yang bertindak sebagai para Manajer. Di bawah Manajer (level 2) terdapat elemen seperti \verb|<h1>|, \verb|<p>|, atau \verb|<div>| yang bertindak sebagai Staf.
+
+Jika menggunakan BFS untuk mencari elemen tertentu (misalnya seorang Staf dengan ID tertentu), algoritma tidak akan menelusuri satu divisi secara mendalam dari Manajer langsung ke staf magang. Alih-alih, BFS akan melakukan pemeriksaan menyapu secara horizontal:
+\begin{itemize}
+    \item Bertanya kepada Direktur Utama (Level 0).
+    \item Bertanya kepada seluruh Manajer secara bergantian, dari ujung kiri ke ujung kanan (Level 1).
+    \item Jika belum ditemukan, barulah turun dan bertanya kepada seluruh Staf di semua divisi (Level 2).
+\end{itemize}
+Proses penelusuran ini ibarat riak gelombang air yang menyebar secara merata, menyapu seluruh titik pada radius terdekat sebelum meluas ke radius yang lebih jauh. Oleh karena itu, jika elemen HTML yang dicari berada di bagian luar atau tidak terlalu dalam dari \textit{root}, algoritma BFS akan menemukannya dengan sangat cepat.
+
+\subsection{Algoritma Breadth-First Search (BFS)}
+
+Algoritma \textit{Breadth-First Search} (BFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengunjungi simpul (\textit{node}) secara melebar (per level). Pencarian dimulai dari simpul awal (biasanya simpul akar atau \textit{root}) pada level $n$, kemudian mengeksplorasi seluruh simpul tetangga yang berada pada level yang sama secara berurutan, sebelum turun untuk mengunjungi simpul-simpul di level $n+1$ atau kedalaman selanjutnya. Karakteristik utama dari BFS adalah penelusuran yang memprioritaskan keluasan (\textit{breadth}) tingkat hierarki daripada kedalaman (\textit{depth}) cabang.
+
+Dalam implementasinya, algoritma BFS beroperasi menggunakan struktur data antrean (\textit{Queue}) yang mengedepankan prinsip \textit{First-In-First-Out} (FIFO). Cara kerja sistematis algoritma ini adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam antrean.
+    \item Lakukan perulangan selama antrean tidak kosong: ambil (keluarkan) simpul dari elemen terdepan (\textit{front}) antrean tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{enqueue}) seluruh simpul tetangga yang terhubung langsung dengan simpul tersebut ke bagian belakang antrean.
+\end{enumerate}
+
+Penggunaan algoritma BFS sangat optimal untuk mencari lintasan terpendek (\textit{shortest path}). Dalam konteks penelusuran graf, BFS akan memeriksa seluruh simpul tetangga secara merata sebelum menyusuri lintasan yang jaraknya lebih jauh dari simpul awal.
+
+\vspace{0.3cm}
+\noindent\textbf{Contoh Penelusuran BFS pada Graf:} \\
+Misalkan terdapat sebuah pohon graf dengan simpul awal adalah \textbf{A} yang bertindak sebagai \textit{root}. Simpul A terhubung ke simpul \textbf{B} dan \textbf{C}. Simpul B memiliki anak \textbf{D} dan \textbf{E}, sedangkan simpul C memiliki anak \textbf{F}. Terakhir, simpul E terhubung ke simpul \textbf{G}. Jika BFS digunakan untuk mencari simpul G dimulai dari simpul A, alur kunjungannya adalah sebagai berikut:
+\begin{itemize}
+    \item \textbf{Level 0:} Algoritma mengevaluasi simpul \textbf{A}. Karena bukan target, tetangganya (B dan C) dimasukkan ke dalam antrean.
+    \item \textbf{Level 1:} Mengambil \textbf{B} dari antrean (memasukkan D dan E), lalu mengambil \textbf{C} dari antrean (memasukkan F).
+    \item \textbf{Level 2:} Mengambil \textbf{D} (tidak ada anak), lalu mengambil \textbf{E} (memasukkan G), dan mengambil \textbf{F} (tidak ada anak).
+    \item \textbf{Level 3:} Mengambil \textbf{G} dari antrean. Target ditemukan dan pencarian selesai.
+\end{itemize}
+Urutan evaluasi simpul yang dikunjungi BFS secara keseluruhan adalah: \textbf{A $\rightarrow$ B $\rightarrow$ C $\rightarrow$ D $\rightarrow$ E $\rightarrow$ F $\rightarrow$ G}. Dapat dilihat bahwa graf ditelusuri secara berlapis, menyelesaikan satu kedalaman sebelum berpindah ke kedalaman berikutnya.
+
+\subsection{Algoritma Depth-First Search (DFS)}
+
+Algoritma \textit{Depth-First Search} (DFS) adalah algoritma pencarian pada graf atau pohon (\textit{tree}) yang dilakukan dengan cara mengeksplorasi sedalam mungkin di sepanjang setiap cabang sebelum melakukan proses mundur (\textit{backtracking}). Pencarian dimulai dari simpul awal (\textit{root}), lalu dilanjutkan dengan memprioritaskan kunjungan ke simpul anak (biasanya yang paling kiri atau berdasarkan prioritas tertentu) terus ke bawah hingga mencapai simpul daun (\textit{leaf node}) terdalam atau simpul tak bertetangga. Karakteristik utama dari DFS adalah penelusuran yang memprioritaskan kedalaman (\textit{depth}) lintasan daripada keluasan (\textit{breadth}) level cabang.
+
+Dalam implementasinya, algoritma DFS beroperasi menggunakan struktur data tumpukan (\textit{Stack}) yang mengedepankan prinsip \textit{Last-In-First-Out} (LIFO), atau diimplementasikan secara elegan menggunakan mekanisme rekursi. Cara kerja sistematis algoritma ini (versi iteratif dengan \textit{Stack}) adalah sebagai berikut:
+\begin{enumerate}
+    \item Masukkan simpul awal (akar) ke dalam tumpukan (\textit{stack}).
+    \item Lakukan perulangan selama tumpukan tidak kosong: ambil (keluarkan) simpul dari elemen teratas (\textit{top}) tumpukan tersebut.
+    \item Evaluasi simpul yang baru saja dikeluarkan. Jika simpul tersebut merupakan target pencarian, maka solusi ditemukan dan proses pencarian dihentikan.
+    \item Jika simpul tersebut bukan merupakan solusi, masukkan (\textit{push}) seluruh simpul tetangga yang belum dikunjungi dari simpul tersebut ke bagian atas tumpukan. 
+    \item Jika sebuah jalur telah dieksplorasi hingga ke ujung dan target belum ditemukan, algoritma akan \textit{backtrack} (mundur) dan melanjutkan proses pencarian dari persimpangan cabang sebelumnya yang simpulnya masih tersimpan di dalam tumpukan.
+\end{enumerate}
+
+Penggunaan algoritma DFS sangat optimal untuk mengeksplorasi graf yang memiliki kedalaman ekstrem atau untuk mencari keberadaan lintasan tertentu tanpa harus memperlebar pencarian di memori.
+
+\vspace{0.3cm}
+\noindent\textbf{Contoh Penelusuran DFS pada Graf:} \\
+Menggunakan graf yang sama: simpul A terhubung ke B dan C; simpul B ke D dan E; simpul C ke F; dan simpul E ke G. Jika algoritma DFS digunakan untuk mencari simpul F dari simpul A (dengan asumsi penelusuran memprioritaskan cabang paling kiri terlebih dahulu), alur kunjungannya adalah sebagai berikut:
+\begin{itemize}
+    \item \textbf{Langkah 1:} Mulai dari simpul \textbf{A}. Lanjutkan penelusuran langsung ke cabang kiri, yaitu simpul \textbf{B}.
+    \item \textbf{Langkah 2:} Dari B, teruskan kembali ke cabang kiri sedalam mungkin, yaitu simpul \textbf{D}.
+    \item \textbf{Langkah 3:} Simpul D adalah daun (tidak memiliki anak). Algoritma mundur (\textit{backtrack}) ke simpul B, lalu menelusuri cabang B yang belum dikunjungi, yaitu simpul \textbf{E}.
+    \item \textbf{Langkah 4:} Dari E, algoritma kembali turun menyusuri kedalaman menuju simpul \textbf{G}.
+    \item \textbf{Langkah 5:} Simpul G adalah daun. Algoritma \textit{backtrack} berulang kali: naik ke E, naik ke B, hingga kembali ke titik awal \textbf{A}. 
+    \item \textbf{Langkah 6:} Dari A, algoritma baru berpindah ke cabang kanannya yang belum tereksplorasi, yaitu simpul \textbf{C}. Dari C, turun ke simpul \textbf{F}. Target ditemukan.
+\end{itemize}
+Urutan evaluasi simpul yang dikunjungi DFS secara keseluruhan adalah: \textbf{A $\rightarrow$ B $\rightarrow$ D $\rightarrow$ E $\rightarrow$ G $\rightarrow$ C $\rightarrow$ F}. Dapat dilihat bahwa DFS menukik tajam secara vertikal hingga ke dasar suatu cabang, sebelum berbalik untuk mengeksplorasi cabang lainnya.
+\subsection{Web Scraping dan Parsing}
+
+\textit{Web scraping}, atau ekstraksi data web, adalah sebuah proses pengambilan data mentah dari suatu situs web secara otomatis. Proses ini beroperasi dengan cara mengirimkan permintaan HTTP (\textit{HTTP request}) ke sebuah URL tertentu. Sebagai respons atas permintaan tersebut, peladen (\textit{server}) web akan mengembalikan konten halaman web yang umumnya berformat HTML. Konten HTML mentah ini memuat berbagai informasi berharga, seperti teks, gambar, tautan, hingga tabel data. Namun, data tersebut masih tertanam di dalam berbagai tag HTML sehingga sulit untuk diekstraksi dan dianalisis dalam bentuk mentahnya. Pendekatan \textit{scraping} ini sangat krusial dalam mengumpulkan dataset berskala besar yang lazim digunakan untuk kebutuhan riset pasar, pemantauan harga, pengumpulan daftar properti, hingga pengumpulan artikel berita. 
+
+Dalam praktiknya, proses \textit{data scraping} difasilitasi oleh berbagai pustaka dan kerangka kerja pemrograman untuk otomatisasi. Beberapa perangkat yang umum digunakan antara lain Scrapy, sebuah kerangka kerja yang fleksibel untuk membangun \textit{web crawlers}; Selenium, yang mampu menyimulasikan interaksi pengguna pada \textit{browser} sehingga sangat efektif untuk melakukan \textit{scraping} pada situs web dinamis berbasis JavaScript; serta pustaka seperti Requests-HTML. Selain itu, terdapat pula berbagai platform \textit{scraper} otomatis (seperti Bright Data, Octoparse, atau Diffbot) yang memungkinkan ekstraksi data tanpa penulisan kode tambahan.
+
+Karena data hasil \textit{scraping} umumnya berupa dokumen HTML yang tidak terstruktur, tahapan selanjutnya yang mutlak diperlukan adalah \textit{Data Parsing} (penguraian data). \textit{Parsing} merupakan proses analisis dan konversi data mentah tak terstruktur menjadi format struktur data yang lebih rapi dan siap untuk diproses lebih lanjut, seperti JSON, XML, atau CSV. Dalam konteks pengolahan web, \textit{parsing} berfokus pada penguraian struktur dokumen HTML untuk mengekstraksi potongan informasi yang spesifik—misalnya mengambil teks dari tag judul (\textit{title}), isi paragraf, atau atribut dari sebuah elemen. 
+
+Proses \textit{parsing} tidak sekadar mengambil data, melainkan mengatur data tersebut berdasarkan hierarki pohon dokumen agar dapat disimpan di basis data atau dianalisis. Proses ini umumnya mengandalkan perangkat pengurai (\textit{parser}) seperti BeautifulSoup pada bahasa Python, yang memungkinkan penelusuran struktur pohon HTML secara efisien untuk menemukan dan mengekstrak elemen yang bermakna. Di luar Python, terdapat pula pustaka seperti Jsoup pada Java, maupun pemanfaatan Ekspresi Reguler (\textit{Regular Expressions}) untuk menangkap pola teks yang lebih kompleks dari data mentah. Secara keseluruhan, kombinasi antara \textit{web scraping} dan \textit{HTML parsing} membentuk sebuah alur kerja integral dalam menangani data web, memproses data formulir, hingga mengolah respons API.
+
+% ========================
+% BAB 3
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 3} \\
+    \vspace{0.2cm}
+    \Large\textbf{APLIKASI BFS DAN DFS}
+\end{center}
+\addcontentsline{toc}{section}{BAB 3: Aplikasi BFS dan DFS}
+\setcounter{section}{3}
+\setcounter{subsection}{0}
+
+\subsection{Representasi Pohon DOM pada Program}
+
+Sebelum algoritma penelusuran seperti BFS dan DFS dapat dioperasikan, dokumen HTML mentah harus diterjemahkan terlebih dahulu ke dalam bentuk struktur data pohon yang dapat dipahami oleh program. Pada aplikasi ini, setiap elemen HTML direpresentasikan secara individual sebagai sebuah objek bernama \texttt{DomNode}. Pemilihan representasi berbasis objek ini didasari oleh kebutuhan untuk menyimpan berbagai atribut yang melekat pada setiap elemen HTML secara rapi dan terstruktur.
+
+Setiap objek \texttt{DomNode} menyimpan beberapa informasi esensial. Pertama, terdapat sebuah identifikator unik (\texttt{Id}) yang membedakan setiap simpul (\textit{node}) di dalam pohon, misalnya \texttt{"node-1"} atau \texttt{"node-42"}. Kedua, nama tag HTML (\texttt{TagName}) yang mencerminkan jenis elemen aslinya, seperti \verb|div|, \verb|span|, atau \verb|p|. Ketiga, atribut \textit{id} HTML (\texttt{ElementId}) beserta daftar kelas CSS (\texttt{Classes}) yang nantinya akan menjadi kunci utama dalam proses pencocokan \textit{selector}. Keempat, terdapat daftar simpul anak (\texttt{Children}) yang mendefinisikan hubungan hierarkis antar-elemen layaknya ranting pada sebuah pohon. Kelima, informasi kedalaman (\texttt{Depth}) yang menunjukkan seberapa jauh jarak simpul tersebut dari akar (\textit{root}), di mana simpul akar selalu memiliki nilai kedalaman nol. Selain itu, setiap simpul juga dibekali dengan \textit{array} untuk \textit{binary lifting} (\texttt{Up}) berukuran 20, yang dipersiapkan untuk mendukung operasi kueri \textit{Lowest Common Ancestor} (LCA) secara efisien.
+
+Proses konversi dari teks HTML mentah menjadi pohon \texttt{DomNode} ini dilakukan oleh komponen \textit{parser} yang memanfaatkan pustaka \texttt{HtmlAgilityPack}. Pustaka ini membaca dokumen secara berurutan, mengenali setiap tag dan atributnya, lalu menyusunnya ke dalam hierarki pohon yang utuh. Setiap kali sebuah tag ditemukan, program akan menginstansiasi objek \texttt{DomNode} baru dan merangkainya dengan simpul induk (\textit{parent}) melalui daftar \texttt{Children}. Hasil akhir dari tahapan \textit{parsing} ini adalah sebuah pohon DOM yang sepenuhnya merepresentasikan struktur dokumen situs web, siap untuk dijelajahi oleh algoritma pencarian.
+
+\subsection{Mekanisme Pencocokan CSS Selector}
+
+Sebagai jembatan antara penelusuran graf dan pencarian elemen, aplikasi membutuhkan sebuah mekanisme untuk menentukan apakah suatu simpul merupakan target yang sedang dicari, maka diperlukannya fungsi pengecekan \texttt{SelectorMatcher}, yang berfungsi mengevaluasi kecocokan antara sebuah simpul \texttt{DomNode} dengan CSS \textit{Selector} yang dimasukkan oleh pengguna.
+
+Mekanisme pencocokan ini bekerja dengan mendeteksi karakter awalan dari \textit{string selector}. Jika \textit{selector} diawali dengan karakter pagar (\verb|#|), maka evaluasi difokuskan pada atribut \textit{id}.  Misalkan, \verb|#header| akan mencari simpul yang nilai \texttt{ElementId}-nya adalah \texttt{"header"}. Jika diawali dengan karakter titik (\verb|.|), maka pencocokan dilakukan pada atribut kelas, contoh \verb|.container| akan menyaring simpul yang memuat \texttt{"container"} di dalam daftar \texttt{Classes}-nya. Namun, apabila \textit{selector} tidak memiliki karakter awalan khusus, program akan mencocokkannya langsung dengan nama tag HTML aslinya---seperti \verb|div| yang akan menargetkan semua simpul bertag \verb|<div>|. Agar lebih fleksibel, seluruh proses evaluasi ini dirancang bersifat \textit{case-insensitive} (tidak membedakan huruf besar dan kecil), sehingga input seperti \verb|DIV| maupun \verb|div| akan memberikan hasil yang sama.
+
+Komponen \texttt{SelectorMatcher} inilah yang akan selalu dipanggil oleh fungsi kunjungan (\textit{visit function}) setiap kali algoritma BFS atau DFS singgah di sebuah simpul. Dengan pola arsitektur ini, alur kerja menjadi sangat terintegrasi: algoritma penelusuran mengambil peran dalam memandu \textit{rute} perjalanan, sedangkan \texttt{SelectorMatcher} mengambil keputusan apakah simpul di ujung rute tersebut adalah data yang \textit{valid}.
+
+\subsection{Cara Kerja Algoritma BFS pada Program}
+
+Penerapan \textit{Breadth-First Search} (BFS) dalam aplikasi ini menerapakan konsep dasar dari BFS itu sendiri, namun juga membuatkan juga memanfaatkan potensi \textit{multithreading} yang ada pada \textit{framework} .NET. Logika algoritma ini dibungkus di dalam kelas \texttt{BfsAlgorithm} melalui metode \texttt{ExecuteParallel}. Metode ini menerima empat parameter utama: simpul akar pohon DOM, fungsi aksi kunjungan, batas maksimal pencarian (opsional), serta koleksi data \textit{thread-safe} untuk menampung elemen yang berhasil dicocokkan.
+
+Penelusuran diinisiasi dengan memasukkan simpul akar ke dalam sebuah antrean bertipe \texttt{ConcurrentQueue}, yaitu varian struktur data antrean yang dijamin aman (\textit{thread-safe}) meskipun diakses oleh banyak \textit{thread} secara bersamaan. Setelah itu, algoritma akan masuk ke dalam putaran perulangan utama yang terus mengeksekusi data selama antrean tidak kosong dan target kuota hasil belum terpenuhi.
+
+Pada setiap iterasinya, algoritma akan menghitung total simpul yang ada pada kedalaman level saat ini. Seluruh simpul tersebut kemudian dikeluarkan dari antrean secara serentak dan disimpan ke dalam sebuah daftar sementara. Tujuan pemisahan ini sangat strategis: agar seluruh simpul pada level yang sama dapat dieksekusi secara \textbf{paralel} menggunakan perintah \texttt{Parallel.ForEach}. Artinya, jika sebuah level pada pohon DOM memiliki ratusan elemen, beban pemeriksaannya dapat didistribusikan ke berbagai inti prosesor secara serentak.
+
+Di dalam blok pemrosesan paralel tersebut, setiap \textit{thread} bertugas menjalankan fungsi kunjungan pada simpul bagiannya. Fungsi ini akan mencatat riwayat kunjungan, mencocokkan \textit{selector}, dan mengamankan data ke dalam daftar hasil jika kriteria terpenuhi. Terakhir, seluruh anak (\textit{children}) dari simpul tersebut dimasukkan kembali ke antrean untuk dipersiapkan pada pemrosesan level berikutnya.
+
+Untuk menjaga efisiensi, aplikasi ini juga mengadopsi mekanisme penghentian dini (\textit{early termination}). Setiap kali fungsi kunjungan berjalan, program akan secara ketat memantau apakah kuota \texttt{maxResults} sudah tercapai. Jika sudah, pemrosesan paralel akan langsung diinterupsi menggunakan perintah \texttt{state.Stop()} dan putaran utama dihentikan melalui \texttt{break}. Fitur ini mencegah algoritma membuang-buang daya komputasi untuk menelusuri sisa pohon yang sudah tidak lagi relevan.
+
+\subsection{Cara Kerja Algoritma DFS pada Program}
+
+Penerapan algoritma \textit{Depth-First Search} (DFS) dalam aplikasi ini, yaitu dengan menelusuri satu cabang hingga ke titik terdalamnya sebelum melangkah mundur dan mencoba percabangan lain. Implementasi algoritma ini diatur di dalam kelas \texttt{DfsAlgorithm} melalui metode \texttt{ExecuteParallel}.
+
+Alih-alih menggunakan pemanggilan fungsi rekursif yang sering dicontohkan dalam buku teks, program ini membangun DFS secara iteratif dengan memanfaatkan \texttt{ConcurrentStack}. Keputusan arsitektural ini diambil dengan dua pertimbangan: pertama, untuk meminimalisasi risiko \textit{stack overflow} yang rentan terjadi ketika menghadapi pohon DOM dengan tingkat kedalaman yang ekstrem; dan kedua, untuk memberikan ruang kontrol yang lebih eksplisit terhadap alur penelusuran.
+
+Langkah pertama dimulai dengan menyisipkan simpul akar ke dalam tumpukan. Pada setiap putaran, simpul yang berada di posisi paling atas (\textit{top}) akan dikeluarkan (\textit{pop}) dan diproses. Proses pemeriksaan ini dieksekusi secara asinkron memanfaatkan \texttt{Parallel.Invoke}, yang memungkinkan fungsi kunjungan berjalan efisien tanpa harus membekukan alur utama program. Begitu simpul selesai diperiksa, seluruh anak dari simpul tersebut akan didorong masuk ke dalam tumpukan.
+
+Ada satu detail teknis yang sangat krusial di sini: proses pendorongan (\textit{push}) anak-anak simpul ke dalam tumpukan sengaja dilakukan secara \textbf{terbalik} (dari anak terakhir hingga anak pertama). Pendekatan ini merupakan konsekuensi logis dari sifat tumpukan yang berprinsip \textit{Last-In-First-Out} (LIFO). Dengan menempatkan anak pertama di urutan terakhir, anak tersebut otomatis akan menduduki posisi puncak tumpukan dan dievaluasi lebih dulu pada putaran berikutnya. Trik matematis ini menjamin urutan penelusuran tetap mengalir dari kiri ke kanan (\textit{left-to-right}), persis seperti perilaku standar DFS.
+
+Berbeda dengan BFS yang memparalelkan eksekusi berdasarkan sekumpulan simpul dalam satu level, paralelisasi pada DFS bersifat lebih sempit. Pemanggilan \texttt{Parallel.Invoke} hanya mengisolasi eksekusi fungsi kunjungan pada satu simpul tunggal, sementara mekanisme perpindahan tumpukannya tetap berjalan secara berurutan. Meskipun percepatan komputasinya tidak sesignifikan BFS, strategi ini memastikan bahwa kaidah penelusuran kedalaman (\textit{depth-first}) tidak rusak oleh perlombaan proses (\textit{race condition}). Sama halnya dengan BFS, fitur terminasi dini juga diterapkan secara ketat pada DFS agar proses dapat langsung diakhiri saat target jumlah hasil telah tercapai.
+
+\subsection{Pseudocode Algoritma}
+
+\subsubsection{Pseudocode BFS}
+\begin{algorithm}[H]
+\caption{BFS dengan Paralelisasi per Level pada Pohon DOM}
+\label{alg:bfs}
+\begin{algorithmic}[1]
+\Procedure{BFS-Parallel}{$root, visitAction, maxResults, matches$}
+    \State $queue \gets$ \textsc{NewConcurrentQueue}()
+    \State $queue$.\textsc{Enqueue}($root$)
+    \While{$queue$ tidak kosong}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{break}
+        \EndIf
+        \State $levelSize \gets |queue|$
+        \State $currentLevel \gets$ daftar kosong
+        \For{$i \gets 1$ \textbf{to} $levelSize$}
+            \State $node \gets queue$.\textsc{Dequeue}()
+            \State $currentLevel$.\textsc{Add}($node$)
+        \EndFor
+        \ForAll{$node \in currentLevel$ \textbf{secara paralel}} \Comment{Parallel.ForEach}
+            \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+                \State Hentikan pemrosesan paralel
+                \State \textbf{continue}
+            \EndIf
+            \State \textsc{VisitAction}($node$) \Comment{Catat kunjungan \& cek selector}
+            \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+                \State Hentikan pemrosesan paralel
+            \EndIf
+            \ForAll{$child \in node.Children$}
+                \State $queue$.\textsc{Enqueue}($child$)
+            \EndFor
+        \EndFor
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode DFS}
+
+\begin{algorithm}[H]
+\caption{DFS Iteratif dengan Stack pada Pohon DOM}
+\label{alg:dfs}
+\begin{algorithmic}[1]
+\Procedure{DFS-Parallel}{$root, visitAction, maxResults, matches$}
+    \State $stack \gets$ \textsc{NewConcurrentStack}()
+    \State $stack$.\textsc{Push}($root$)
+    \While{$stack$ tidak kosong}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{break}
+        \EndIf
+        \State $node \gets stack$.\textsc{Pop}()
+        \State Jalankan secara paralel: \Comment{Parallel.Invoke}
+        \If{$maxResults \neq \text{null}$ \textbf{dan} $|matches| \geq maxResults$}
+            \State \textbf{continue}
+        \EndIf
+        \State \textsc{VisitAction}($node$) \Comment{Catat kunjungan \& cek selector}
+        \If{$node.Children \neq \text{null}$}
+            \For{$i \gets |node.Children| - 1$ \textbf{downto} $0$} \Comment{Push terbalik}
+                \State $stack$.\textsc{Push}($node.Children[i]$)
+            \EndFor
+        \EndIf
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode Pencocokan Selector}
+\begin{algorithm}[H]
+\caption{Pencocokan CSS Selector pada Simpul DOM}
+\label{alg:matcher}
+\begin{algorithmic}[1]
+\Function{Matches}{$node, selector$}
+    \If{$selector$ kosong}
+        \State \Return \textbf{false}
+    \EndIf
+    \If{$selector$ diawali \texttt{'\#'}}
+        \State \Return $node.ElementId = selector[1..]$ \Comment{ID Selector}
+    \ElsIf{$selector$ diawali \texttt{'.'}}
+        \State $targetClass \gets selector[1..]$
+        \State \Return $targetClass \in node.Classes$ \Comment{Class Selector}
+    \Else
+        \State \Return $node.TagName = selector$ \Comment{Tag Selector}
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Pseudocode Fungsi Kunjungan}
+\begin{algorithm}[H]
+\caption{Fungsi Kunjungan Simpul (LogVisit)}
+\label{alg:logvisit}
+\begin{algorithmic}[1]
+\Procedure{LogVisit}{$node$}
+    \State $nodesVisited \gets nodesVisited + 1$ \Comment{Penambahan atomik}
+    \State $maxDepth \gets \max(maxDepth, node.Depth)$ \Comment{Pembaruan atomik}
+    \State $traversalPath$.\textsc{Enqueue}($node.Id$)
+    \State $traversalLog$.\textsc{Enqueue}(\texttt{"Mengunjungi <"} $+ node.TagName +$ \texttt{">"})
+    \If{\textsc{Matches}($node, selector$)}
+        \State $matchedNodes$.\textsc{Add}($node$)
+        \State $traversalLog$.\textsc{Enqueue}(\texttt{"[MATCH] ditemukan"})
+    \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Analisis Kompleksitas Waktu}
+
+\subsubsection{Kompleksitas Waktu BFS}
+
+Pada skenario terburuk (\textit{worst case}), misalnya ketika elemen yang dicari sama sekali tidak ada atau tidak ada batasan kuota \texttt{maxResults}, algoritma BFS terpaksa harus mengunjungi seluruh $n$ simpul. Pada setiap persinggahan, program melakukan operasi antrean (\textit{enqueue} dan \textit{dequeue}) yang memakan waktu konstan $O(1)$, serta mengevaluasi kecocokan \textit{selector} yang secara praktis juga beroperasi pada kecepatan $O(1)$. Berdasarkan perhitungan tersebut, waktu eksekusi sekuensial (linier) dari BFS adalah:
+\[
+T_{BFS}(n) = O(n)
+\]
+
+Saat \textit{multithreading} dilibatkan. Dengan memanfaatkan \texttt{Parallel.ForEach}, beban komputasi dapat didistribusikan. Jika sistem memiliki $p$ buah \textit{thread} yang siap bekerja dan sebuah level ke-$i$ memuat $n_i$ simpul, maka waktu penyelesaian level tersebut dapat dipangkas menjadi $O(n_i / p)$. Bila diakumulasikan secara ideal, waktu komputasinya menyusut menjadi:
+\[
+T_{BFS\text{-}parallel} = O\!\left(\sum_{i=0}^{d} \frac{n_i}{p}\right) = O\!\left(\frac{n}{p}\right)
+\]
+Di dunia nyata, rasio percepatan ini memang tidak murni linear karena akan selalu ada \textit{overhead} sistem untuk sinkronisasi \textit{thread}. Namun pada halaman web dengan struktur DOM yang kaya akan elemen sebaya (lebar), pemangkasan waktu ini tetap akan sangat terasa.
+
+\subsubsection{Kompleksitas Waktu DFS}
+
+Dalam perhitungan sekuensial, nasib DFS serupa dengan BFS. Algoritma akan melangkah satu per satu menyambangi $n$ simpul pada skenario terburuk, melakukan operasi tumpukan (\textit{push} dan \textit{pop}) dengan kompleksitas $O(1)$. Maka:
+\[
+T_{DFS}(n) = O(n)
+\]
+
+Meskipun DFS pada aplikasi ini juga diinjeksi dengan \texttt{Parallel.Invoke}, dampak percepatannya jauh lebih konservatif. Hal ini terjadi karena proses utama yang mengatur alur perjalanan di dalam tumpukan tetap berjalan seperti kendaraan di jalur tunggal (sekuensial). Paralelisasi di sini hanya berlaku pada durasi pemrosesan internal tiap simpul, bukan pada rute perjalanannya. Akibatnya, estimasi waktunya secara keseluruhan tetap berpijak pada kisaran:
+\[
+T_{DFS\text{-}parallel} \approx O(n)
+\]
+
+\subsubsection{Perbandingan Waktu BFS dan DFS}
+Berdasarkan perbandingan waktu pada algoritma BFS dan DFS, algoritma BFS dan DFS memiliki kompleksitas waktu yang sama secara sekuensial, yaitu  $O(n)$. Namun, pada saat algoritma dapat melakukan \textit{multithreading}, algoritma BFS memiliki kompleksitas yang jauh lebih baik dari pada algoritma DFS.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspek} & \textbf{BFS} & \textbf{DFS} \\ \hline
+Kompleksitas waktu (sekuensial) & $O(n)$ & $O(n)$ \\ \hline
+Kompleksitas waktu (paralel) & $O(n/p)$ & $\approx O(n)$ \\ \hline
+Efisiensi terminasi dini (elemen dangkal) & Tinggi & Rendah \\ \hline
+Efisiensi terminasi dini (elemen dalam) & Rendah & Tinggi \\ \hline
+\end{tabular}
+\caption{Perbandingan Kompleksitas Waktu BFS dan DFS}
+\label{tab:waktu}
+\end{table}
+
+\subsection{Analisis Kompleksitas Ruang (Memori)}
+
+\subsubsection{Kompleksitas Ruang BFS}
+
+Arsitektur BFS mewajibkannya untuk menyimpan seluruh simpul dari level yang sedang aktif beserta calon anak-anaknya secara bersamaan di dalam antrean. Jumlah data ini berkorelasi langsung dengan seberapa "lebar" wujud pohon tersebut.
+
+Pada kasus paling parah, di mana pohon berbentuk sangat rata dan melebar ke samping (dengan faktor percabangan $b$), level terbawah akan dijejali oleh $O(b^d)$ simpul. Kebutuhan memori BFS didefinisikan sebagai:
+\[
+S_{BFS} = O(w)
+\]
+di mana $w$ mewakili rekor jumlah simpul terbanyak di satu level tertentu. Jika struktur DOM sangat dangkal namun berjejer panjang, nilai $w$ bisa membengkak mendekati total elemen $O(n)$.
+
+\subsubsection{Kompleksitas Ruang DFS}
+
+Arsitektur DFS memiliki ikatan memori dengan tingkat kedalaman (\textit{depth}) pohon. Tumpukan data pada DFS dirancang secara efisien untuk hanya "mengingat" jalan pulang dari simpul yang sedang ia pijak saat ini, beserta beberapa pintu persimpangan (\textit{sibling}) yang belum sempat ia buka.
+
+Jika direpresentasikan dalam rumus, untuk pohon sedalam $d$ dengan faktor cabang $b$, tumpukan DFS hanya akan menanggung beban sekitar $b - 1$ simpul simpangan di setiap lapisan yang dilewatinya. Alhasil, batas maksimum memorinya adalah:
+\[
+S_{DFS} = O(b \cdot d)
+\]
+
+\subsubsection{Perbandingan Memori BFS dan DFS}
+
+Bedasarkan perbandingan memori pada algoritma BFS dan DFS, arsitektur BFS memiliki kompleksitas memori yang sangat besar, yaitu mendekati  total elemen $O(n)$. Sedangkan arsitektur DFS memiliki kompleksitas memori yang sangat cukup, yaitu hingga tingkat kedalaman pohon, yaitu $O(b.d)$ dengan pohon sedalam \textit{d} dengan faktor cabang \textit{b} 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspek} & \textbf{BFS} & \textbf{DFS} \\ \hline
+Struktur data utama & \texttt{ConcurrentQueue} & \texttt{ConcurrentStack} \\ \hline
+Kompleksitas ruang (umum) & $O(w)$ & $O(b \cdot d)$ \\ \hline
+Kompleksitas ruang (terburuk) & $O(n)$ & $O(n)$ \\ \hline
+Pohon lebar \& dangkal & Boros memori & Hemat memori \\ \hline
+Pohon sempit \& dalam & Hemat memori & Hemat memori \\ \hline
+Pohon DOM tipikal & Moderat & Hemat \\ \hline
+\end{tabular}
+\caption{Perbandingan Kompleksitas Ruang BFS dan DFS}
+\label{tab:memori}
+\end{table}
+
+
+% ========================
+% BAB 4
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 4} \\
+    \vspace{0.2cm}
+    \Large\textbf{IMPLEMENTASI DAN PENGUJIAN}
+\end{center}
+\addcontentsline{toc}{section}{BAB 4: Implementasi dan Pengujian}
+\setcounter{section}{4}
+\setcounter{subsection}{0}
+
+\subsection{Lingkungan Pengembangan}
+Proyek ini dikembangkan dengan membaginya menjadi dua komponen utama, yaitu \textit{frontend} dan \textit{backend}. Komponen \textit{frontend} bertugas untuk menyajikan antarmuka pengguna, menerima masukan berupa tautan (URL) maupun kode sumber HTML, serta menampilkan visualisasi pohon DOM dari hasil masukan tersebut. 
+
+Sementara itu, komponen \textit{backend} bertugas memproses permintaan dari pengguna. Jika pengguna memberikan tautan, \textit{backend} akan melakukan \textit{scraping} untuk mengambil kode sumber HTML. Kode tersebut kemudian melewati proses \textit{parsing} untuk diubah menjadi struktur pohon DOM. Selanjutnya, \textit{backend} juga mengeksekusi algoritma pencarian elemen berdasarkan CSS \textit{selector}, baik menggunakan pendekatan \textit{Breadth-First Search} (BFS) maupun \textit{Depth-First Search} (DFS).
+
+Secara teknis, \textit{frontend} dibangun menggunakan \textit{framework} React yang berbasis JavaScript. Di sisi lain, \textit{backend} dikembangkan menggunakan bahasa pemrograman C\# di atas \textit{framework} .NET dari Microsoft.
+
+\subsection{Antarmuka Pengguna (UI)}
+[Tangkapan layar (screenshot) aplikasi dan penjelasan fungsi tombol/input.]
+
+\subsection{Hasil Pengujian}
+\begin{itemize}
+    \item \textbf{Skenario 1:} Pencarian dengan ID unik.
+    \item \textbf{Skenario 2:} Pencarian dengan Class yang tersebar di berbagai level.
+    \item \textbf{Skenario 3:} Perbandingan waktu eksekusi BFS vs DFS pada situs web yang kompleks.
+\end{itemize}
+
+\subsection{Analisis Hasil Traversal Log}
+[Menampilkan contoh log jalur yang ditempuh oleh masing-masing algoritma untuk mencapai target yang sama.]
+
+% ========================
+% BAB 5
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 5} \\
+    \vspace{0.2cm}
+    \Large\textbf{KESIMPULAN DAN SARAN}
+\end{center}
+\addcontentsline{toc}{section}{BAB 5: Kesimpulan dan Saran}
+\setcounter{section}{5}
+\setcounter{subsection}{0}
+
+\subsection{Kesimpulan}
+[Rangkuman mengenai algoritma mana yang lebih efisien untuk kasus tertentu berdasarkan hasil pengujian di Bab 4.]
+
+\subsection{Saran}
+[Masukan untuk pengembangan aplikasi di masa depan, misal penambahan fitur atau optimasi memori.]
+
+\newpage
+\appendix
+
+% ========================
+% LAMPIRAN
+% ========================
+\section{Lampiran}
+
+\subsection{Tautan Repositori GitHub dan Video}
+\textbf{Repositori GitHub:} \href{https://github.com/Alpaomega1136/Tubes2_e621.git}{https://github.com/Alpaomega1136/Tubes2_e621.git} \\
+\textbf{Video Demo:} \href{https://link-video.com}{https://link-video.com} 
+
+
+\subsection{Tabel Checklist Kelengkapan}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|p{10cm}|c|c|}
+\hline
+\textbf{No} & \textbf{Poin} & \textbf{Ya} & \textbf{Tidak} \\ \hline
+1 & Aplikasi berhasil di kompilasi tanpa kesalahan & $\checkmark$ & \\  \hline
+2 & Aplikasi berhasil dijalankan & $\checkmark$ & \\ \hline
+3 & Aplikasi dapat menerima input URL web, pilihan algoritma, CSS selector, dan jumlah hasil & $\checkmark$ & \\ \hline
+4 & Aplikasi dapat melakukan scraping terhadap web pada input & $\checkmark$ & \\ \hline
+5 & Aplikasi dapat menampilkan visualisasi pohon DOM & $\checkmark$ & \\ \hline
+6 & Aplikasi dapat menelusuri pohon DOM dan menampilkan hasil penelusuran & $\checkmark$ & \\ \hline
+7 & Aplikasi dapat menandai jalur tempuh oleh algoritma & $\checkmark$ & \\ \hline
+8 & Aplikasi dapat menyimpan jalur yang ditempuh algoritma dalam traversal log & $\checkmark$ & \\ \hline
+9 & [Bonus] Membuat video & & \\ \hline
+10 & [Bonus] Deploy aplikasi & & \\ \hline
+11 & [Bonus] Implementasi animasi pada penelusuran pohon & $\checkmark$ & \\ \hline
+12 & [Bonus] Implementasi multithreading & $\checkmark$ & \\ \hline
+13 & [Bonus] Implementasi LCA Binary Lifting & $\checkmark$ & \\ \hline
+\end{tabular}
+\end{table}
+
+\vspace{1cm}
+\noindent
+\fbox{
+\begin{minipage}{0.97\linewidth}
+Tugas ini disusun sepenuhnya tanpa bantuan kecerdasan buatan
+(\textit{Generative AI}), melainkan hasil pemikiran dan analisis mandiri.
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd1.png}\\
+An-Dafa Anza Avansyah
+\end{flushright}
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd2.png}\\
+M. Haris Putra S.
+\end{flushright}
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd3.png}\\
+Raymond Jonathan Dwi Putra Julianto
+\end{flushright}
+\end{minipage}
+}
+
+\newpage
+\nocite{*}
+\bibliographystyle{plainurl}
+\addcontentsline{toc}{section}{Daftar Pustaka}
+\bibliography{cite}
+
+\end{document}uk) & $O(n)$ & $O(n)$ \\ \hline
+Pohon lebar \& dangkal & Boros memori & Hemat memori \\ \hline
+Pohon sempit \& dalam & Hemat memori & Hemat memori \\ \hline
+Pohon DOM tipikal & Moderat & Hemat \\ \hline
+\end{tabular}
+\caption{Perbandingan Kompleksitas Ruang BFS dan DFS}
+\label{tab:memori}
+\end{table}
+
+
+% ========================
+% BAB 4
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 4} \\
+    \vspace{0.2cm}
+    \Large\textbf{IMPLEMENTASI DAN PENGUJIAN}
+\end{center}
+\addcontentsline{toc}{section}{BAB 4: Implementasi dan Pengujian}
+\setcounter{section}{4}
+\setcounter{subsection}{0}
+
+\subsection{Lingkungan Pengembangan}
+Proyek ini dikembangkan dengan membaginya menjadi dua komponen utama, yaitu \textit{frontend} dan \textit{backend}. Komponen \textit{frontend} bertugas untuk menyajikan antarmuka pengguna, menerima masukan berupa tautan (URL) maupun kode sumber HTML, serta menampilkan visualisasi pohon DOM dari hasil masukan tersebut. 
+
+Sementara itu, komponen \textit{backend} bertugas memproses permintaan dari pengguna. Jika pengguna memberikan tautan, \textit{backend} akan melakukan \textit{scraping} untuk mengambil kode sumber HTML. Kode tersebut kemudian melewati proses \textit{parsing} untuk diubah menjadi struktur pohon DOM. Selanjutnya, \textit{backend} juga mengeksekusi algoritma pencarian elemen berdasarkan CSS \textit{selector}, baik menggunakan pendekatan \textit{Breadth-First Search} (BFS) maupun \textit{Depth-First Search} (DFS).
+
+Secara teknis, \textit{frontend} dibangun menggunakan \textit{framework} React yang berbasis JavaScript. Di sisi lain, \textit{backend} dikembangkan menggunakan bahasa pemrograman C\# di atas \textit{framework} .NET dari Microsoft.
+
+\subsection{Antarmuka Pengguna (UI)}
+[Tangkapan layar (screenshot) aplikasi dan penjelasan fungsi tombol/input.]
+
+\subsection{Hasil Pengujian}
+\begin{itemize}
+    \item \textbf{Skenario 1:} Pencarian dengan ID unik.
+    \item \textbf{Skenario 2:} Pencarian dengan Class yang tersebar di berbagai level.
+    \item \textbf{Skenario 3:} Perbandingan waktu eksekusi BFS vs DFS pada situs web yang kompleks.
+\end{itemize}
+
+\subsection{Analisis Hasil Traversal Log}
+[Menampilkan contoh log jalur yang ditempuh oleh masing-masing algoritma untuk mencapai target yang sama.]
+
+% ========================
+% BAB 5
+% ========================
+\newpage
+\begin{center}
+    \Large\textbf{BAB 5} \\
+    \vspace{0.2cm}
+    \Large\textbf{KESIMPULAN DAN SARAN}
+\end{center}
+\addcontentsline{toc}{section}{BAB 5: Kesimpulan dan Saran}
+\setcounter{section}{5}
+\setcounter{subsection}{0}
+
+\subsection{Kesimpulan}
+[Rangkuman mengenai algoritma mana yang lebih efisien untuk kasus tertentu berdasarkan hasil pengujian di Bab 4.]
+
+\subsection{Saran}
+[Masukan untuk pengembangan aplikasi di masa depan, misal penambahan fitur atau optimasi memori.]
+
+\newpage
+\appendix
+
+% ========================
+% LAMPIRAN
+% ========================
+\section{Lampiran}
+
+\subsection{Tautan Repositori GitHub dan Video}
+\textbf{Repositori GitHub:} \href{https://github.com/Alpaomega1136/Tubes2_e621.git}{https://github.com/Alpaomega1136/Tubes2_e621.git} \\
+\textbf{Video Demo:} \href{https://link-video.com}{https://link-video.com} 
+
+
+\subsection{Tabel Checklist Kelengkapan}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|p{10cm}|c|c|}
+\hline
+\textbf{No} & \textbf{Poin} & \textbf{Ya} & \textbf{Tidak} \\ \hline
+1 & Aplikasi berhasil di kompilasi tanpa kesalahan & $\checkmark$ & \\  \hline
+2 & Aplikasi berhasil dijalankan & $\checkmark$ & \\ \hline
+3 & Aplikasi dapat menerima input URL web, pilihan algoritma, CSS selector, dan jumlah hasil & $\checkmark$ & \\ \hline
+4 & Aplikasi dapat melakukan scraping terhadap web pada input & $\checkmark$ & \\ \hline
+5 & Aplikasi dapat menampilkan visualisasi pohon DOM & $\checkmark$ & \\ \hline
+6 & Aplikasi dapat menelusuri pohon DOM dan menampilkan hasil penelusuran & $\checkmark$ & \\ \hline
+7 & Aplikasi dapat menandai jalur tempuh oleh algoritma & $\checkmark$ & \\ \hline
+8 & Aplikasi dapat menyimpan jalur yang ditempuh algoritma dalam traversal log & $\checkmark$ & \\ \hline
+9 & [Bonus] Membuat video & & \\ \hline
+10 & [Bonus] Deploy aplikasi & & \\ \hline
+11 & [Bonus] Implementasi animasi pada penelusuran pohon & $\checkmark$ & \\ \hline
+12 & [Bonus] Implementasi multithreading & $\checkmark$ & \\ \hline
+13 & [Bonus] Implementasi LCA Binary Lifting & $\checkmark$ & \\ \hline
+\end{tabular}
+\end{table}
+
+\vspace{1cm}
+\noindent
+\fbox{
+\begin{minipage}{0.97\linewidth}
+Tugas ini disusun sepenuhnya tanpa bantuan kecerdasan buatan
+(\textit{Generative AI}), melainkan hasil pemikiran dan analisis mandiri.
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd1.png}\\
+An-Dafa Anza Avansyah
+\end{flushright}
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd2.png}\\
+M. Haris Putra S.
+\end{flushright}
+
+\begin{flushright}
+\includegraphics[height=2cm,keepaspectratio]{ttd3.png}\\
+Raymond Jonathan Dwi Putra Julianto
+\end{flushright}
+\end{minipage}
+}
+
+\newpage
+\nocite{*}
+\bibliographystyle{plainurl}
+\addcontentsline{toc}{section}{Daftar Pustaka}
+\bibliography{cite}
+
+\end{document}

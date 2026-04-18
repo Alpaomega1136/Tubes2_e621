@@ -38,33 +38,27 @@ namespace backEnd.algorithms
         {
             if (root == null) return;
 
-            var stack = new ConcurrentStack<DomNode>();
-            stack.Push(root);
+            visitAction(root);
 
-            int workerCount = Environment.ProcessorCount;
+            if (root.Children == null || root.Children.Count == 0) return;
 
-            Parallel.For(0, workerCount, _ =>
+            Parallel.ForEach(root.Children, (child, state) =>
             {
-                while (!stack.IsEmpty)
+                if (maxResults.HasValue && matches.Count >= maxResults.Value) { state.Stop(); return; }
+
+                var stack = new Stack<DomNode>();
+                stack.Push(child);
+
+                while (stack.Count > 0)
                 {
-                    if (maxResults.HasValue && matches.Count >= maxResults.Value)
-                        break;
+                    if (maxResults.HasValue && matches.Count >= maxResults.Value) break;
 
-                    if (stack.TryPop(out var node))
-                    {
-                        if (maxResults.HasValue && matches.Count >= maxResults.Value)
-                            return;
+                    var node = stack.Pop();
+                    visitAction(node);
 
-                        visitAction(node);
-
-                        if (node.Children != null)
-                        {
-                            for (int i = 0; i < node.Children.Count; i++)
-                            {
-                                stack.Push(node.Children[i]);
-                            }
-                        }
-                    }
+                    if (node.Children != null)
+                        for (int i = node.Children.Count - 1; i >= 0; i--)
+                            stack.Push(node.Children[i]);
                 }
             });
         }

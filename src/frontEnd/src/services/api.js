@@ -1,5 +1,5 @@
 // Base URL untuk koneksi frontend ke backend C#
-const BASE_URL = "http://localhost:5027";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5027";
 
 // Memanggil API backend untuk mendapatkan pohon DOM (dari URL atau HTML mentah)
 export async function scrapeHtml({ url, html }) {
