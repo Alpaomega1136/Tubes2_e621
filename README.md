@@ -57,7 +57,7 @@ DFS cocok digunakan untuk menelusuri struktur pohon yang dalam atau ketika eleme
 | **HTML, CSS, dan JavaScript** | ES6+ Standard                                   |
 | **React**                     | v18.0+ (Menggunakan Vite)                       |
 | **C#**                        | C# 12.0                                         |
-| **.NET SDK**                  | versi 8.0 (Sesuaikan versi di `backEnd.csproj`) |
+| **.NET SDK**                  | versi 10.0 (Diperbarui karena dukungan runtime) |
 | **Sistem Operasi**            | Windows / Linux (WSL)                           |
 | **Docker** (Opsional)         | v20.0+ (Sudah diuji di 29.4.0)                  |
 
@@ -72,10 +72,11 @@ docker compose version
 
 ### 1. Menjalankan Aplikasi
 
-Dari root project (`/Tubes2_e621`), jalankan:
+Dari root project (`/Tubes2_e621`), masuk ke folder source dan jalankan compose:
 
 ```bash
-docker compose up --build
+cd src
+docker-compose up -d --build
 ```
 
 ### 2. Akses Aplikasi
@@ -83,7 +84,7 @@ docker compose up --build
 Setelah berhasil dijalankan:
 
 - Frontend: http://localhost:5173
-- Backend API: http://localhost:5027/swagger
+- Backend API (Health/Root): http://localhost:5027/api/scrape
 
 atau dengan IP Network yang tertera pada terminal
 
@@ -156,7 +157,7 @@ Tubes2_e621/
 
 ### Link Deployment
 
-[Micosoft Azzure (soon)]()
+[Microsoft Azure (Live)](https://domtraversal-ggdaepatgnhzbbaz.indonesiacentral-01.azurewebsites.net)
 
 ### Author
 
