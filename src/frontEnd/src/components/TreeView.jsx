@@ -5,23 +5,34 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, i
   const [expanded, setExpanded] = useState(depth < 2);
   const hasChildren = node.children && node.children.length > 0;
 
-  const isMatched = matchedIds?.includes(node.id);
+  const isActuallyMatched = matchedIds?.includes(node.id);
   const visitOrder = traversalPath?.indexOf(node.id);
   const isTraversed = visitOrder !== -1;
   const isVisiting = node.id === currentNodeId;
+  const isMatched = isActuallyMatched && isTraversed;
   const nodeRef = useRef(null);
 
   useEffect(() => {
     if (isVisiting) {
       setExpanded(true);
       if (nodeRef.current) {
-        // Animasi auto-scroll canggih (Horizontal dan Vertikal)
-        if(isFocus){
-          nodeRef.current.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        // Animasi auto-scroll khusus area diagram saja (tidak seluruh page Window)
+        if (isFocus) {
+          const container = document.getElementById("tree-scroll-container");
+          if (container && nodeRef.current) {
+            const nodeRect = nodeRef.current.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            container.scrollBy({
+              top: nodeRect.top - containerRect.top - (containerRect.height / 2) + (nodeRect.height / 2),
+              left: nodeRect.left - containerRect.left - (containerRect.width / 2) + (nodeRect.width / 2),
+              behavior: "smooth"
+            });
+          }
         }
       }
     }
-  }, [isVisiting,isFocus]);
+  }, [isVisiting, isFocus]);
 
   useEffect(() => {
     if (traversalPath?.length === 0) {
@@ -88,22 +99,22 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, i
             className="flex flex-col py-1 pl-8 relative shrink-0"
           >
             {/* Garis Horizontal Penghubung Utama dari Parent ke Garis Vertikal */}
-            <div className="absolute left-0 top-1/2 w-4 h-px bg-borderDrop/70 -translate-y-1/2" />
+            <div className="absolute left-0 top-1/2 w-4 h-[2px] bg-sky-400/80 -translate-y-1/2" />
 
             {node.children.map((child, idx) => (
               <div key={child.id} className="relative flex items-center py-1 shrink-0">
                 {/* Garis Horizontal Menuju Kotak Anak */}
-                <div className="absolute -left-4 w-4 h-px bg-borderDrop/70" />
+                <div className="absolute -left-4 w-4 h-[2px] bg-sky-400/80" />
                 
                 {/* Logika Garis Vertikal (Trunk) yang menyambung antar anak */}
                 {node.children.length > 1 && (
                   <>
                     {/* Anak Pertama: Garis vertikal ke bawah */}
-                    {idx === 0 && <div className="absolute -left-4 top-1/2 bottom-0 w-px bg-borderDrop/70" />}
+                    {idx === 0 && <div className="absolute -left-4 top-1/2 bottom-0 w-[2px] bg-sky-400/80" />}
                     {/* Anak Terakhir: Garis vertikal ke atas */}
-                    {idx === node.children.length - 1 && <div className="absolute -left-4 top-0 bottom-1/2 w-px bg-borderDrop/70" />}
+                    {idx === node.children.length - 1 && <div className="absolute -left-4 top-0 bottom-1/2 w-[2px] bg-sky-400/80" />}
                     {/* Anak di Tengah: Garis vertikal menembus atas ke bawah */}
-                    {idx > 0 && idx < node.children.length - 1 && <div className="absolute -left-4 top-0 bottom-0 w-px bg-borderDrop/70" />}
+                    {idx > 0 && idx < node.children.length - 1 && <div className="absolute -left-4 top-0 bottom-0 w-[2px] bg-sky-400/80" />}
                   </>
                 )}
 
@@ -126,6 +137,11 @@ function TreeNode({ node, matchedIds, traversalPath, currentNodeId, depth = 0, i
 }
 
 export default function TreeView({tree, maxDepth, totalNodes, matchedIds, traversalPath, currentNodeId, loading, isFocus, expandAll}) {
+  const [zoom, setZoom] = useState(1);
+  const handleZoomIn = () => setZoom(prev => Math.min(1.5, prev + 0.1));
+  const handleZoomOut = () => setZoom(prev => Math.max(0.3, prev - 0.1));
+  const resetZoom = () => setZoom(1);
+
   if (loading) return <div className="glass-panel rounded-2xl flex-1 flex flex-col items-center justify-center min-h-[400px] border border-borderDrop/50 text-gray-500 space-y-4">Membangun Diagram Pohon...</div>;
   if (!tree) return <div className="glass-panel rounded-2xl flex-1 flex flex-col items-center justify-center min-h-[400px] p-8 border border-borderDrop/50 text-gray-500 text-center">Data Pohon Belum Dimuat</div>;
 
@@ -134,6 +150,14 @@ export default function TreeView({tree, maxDepth, totalNodes, matchedIds, traver
       <div className="px-6 py-4 border-b border-borderDrop flex flex-wrap items-center justify-between gap-4 bg-surface/30 shrink-0">
         <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-400">Diagram Alur (Horizontal)</h2>
         <div className="flex gap-4">
+          {/* Zoom Controls */}
+          <div className="flex bg-background/80 border border-borderDrop rounded-lg items-center backdrop-blur-sm overflow-hidden text-xs shrink-0 shadow-sm">
+            <button onClick={handleZoomOut} disabled={zoom <= 0.301} className="px-3 py-1 font-bold text-gray-400 hover:text-white hover:bg-surface disabled:opacity-30 transition-colors" title="Zoom Out">−</button>
+            <span className="px-1 py-1 text-gray-100 font-mono border-x border-borderDrop/50 w-12 text-center" title="Zoom Level">{Math.round(zoom * 100)}%</span>
+            <button onClick={handleZoomIn} disabled={zoom >= 1.499} className="px-3 py-1 font-bold text-gray-400 hover:text-white hover:bg-surface disabled:opacity-30 transition-colors" title="Zoom In">+</button>
+            <button onClick={resetZoom} className="px-3 py-1 text-calmBlue hover:text-calmBlue-light hover:bg-surface border-l border-borderDrop/50 transition-colors font-semibold" title="Reset Zoom">Reset</button>
+          </div>
+
           <div className="bg-background/80 border border-borderDrop rounded-lg px-3 py-1 text-xs text-gray-400 flex items-center gap-1.5 backdrop-blur-sm">
             Depth: <strong className="text-gray-100 font-mono">{maxDepth}</strong>
           </div>
@@ -161,8 +185,14 @@ export default function TreeView({tree, maxDepth, totalNodes, matchedIds, traver
       </div>
 
       {/* Area Viewport Utama dengan Scrollbar 2 Arah (Pan/Tilt) */}
-      <div className="p-6 md:p-8 overflow-auto custom-scrollbar flex-1 relative bg-background/20 overflow-x-auto overflow-y-auto">
-        <div className="min-w-fit min-h-fit origin-top-left">
+      <div 
+        id="tree-scroll-container"
+        className="p-6 md:p-8 overflow-auto custom-scrollbar flex-1 relative bg-background/20 overflow-x-auto overflow-y-auto"
+      >
+        <div 
+          className="min-w-fit min-h-fit origin-top-left transition-transform duration-200"
+          style={{ transform: `scale(${zoom})` }}
+        >
           <TreeNode
             node={tree}
             matchedIds={matchedIds}
