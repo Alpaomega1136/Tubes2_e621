@@ -55,11 +55,11 @@ DFS cocok digunakan untuk menelusuri struktur pohon yang dalam atau ketika eleme
 | ----------------------------- | ----------------------------------------------- |
 | **Node.js & NPM**             | v18.0 atau yang lebih baru                      |
 | **HTML, CSS, dan JavaScript** | ES6+ Standard                                   |
-| **React**                     | v18.0+ (Menggunakan Vite)                       |
+| **React**                     | v18.0+                                          |
 | **C#**                        | C# 12.0                                         |
-| **.NET SDK**                  | versi 10.0 (Diperbarui karena dukungan runtime) |
+| **.NET SDK**                  | versi 10.0                                      |
 | **Sistem Operasi**            | Windows / Linux (WSL)                           |
-| **Docker** (Opsional)         | v20.0+ (Sudah diuji di 29.4.0)                  |
+| **Docker** (Opsional)         | v20.0+                                          |
 
 ## Quick Start (Docker)
 
