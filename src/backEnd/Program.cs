@@ -3,7 +3,6 @@ using backEnd.services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 // Diperlukan oleh HtmlProviderService untuk fetch HTML dari URL
 builder.Services.AddHttpClient();
@@ -30,8 +29,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Swagger dinonaktifkan di .NET 10 karena library usang
 }
 
 app.UseCors("AllowViteFrontend");

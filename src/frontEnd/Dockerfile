@@ -1,27 +1,18 @@
-FROM node:20
-
+FROM node:20-slim AS build
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
 
 COPY . .
-
 RUN npm run build
 
-EXPOSE 5173
-CMD ["npm", "run", "dev"]
+FROM nginx:alpine
+RUN rm -rf /usr/share/nginx/html/*
 
-# production
-# FROM node:20-slim AS build
-# WORKDIR /app
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# COPY package*.json ./
-# RUN npm install
+EXPOSE 80
 
-# COPY . .
-# RUN npm run build
-
-# # serve
-# FROM nginx:alpine
-# COPY --from=build /app/dist /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
