@@ -2,14 +2,14 @@ using backEnd.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace backEnd.services {
     public class DomParserService {
         private int nodeCounter_ = 0;
 
         private static readonly HashSet<string> VoidElements = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-            "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"
+            "area", "base", "br", "col", "embed", "hr", "img", "input",
+            "link", "meta", "param", "source", "track", "wbr"
         };
 
         public DomNode ParseAndPrepareLCA(string html) {
@@ -18,34 +18,81 @@ namespace backEnd.services {
 
             var stack = new Stack<DomNode>();
             DomNode root = null;
-            int lastIndex = 0;
+            int pos = 0;
 
-            string pattern = @"<\s*(/?)\s*([a-zA-Z0-9_-]+)([^>]*?)(/?)\s*>";
-            var matches = Regex.Matches(html, pattern);
+            while (pos < html.Length) {
+                int nextOpen = html.IndexOf('<', pos);
 
-            foreach (Match match in matches) {
-                string textBetween = html.Substring(lastIndex, match.Index - lastIndex).Trim();
-                if (!string.IsNullOrEmpty(textBetween) && stack.Count > 0) {
-                    var topNode = stack.Peek();
-                    topNode.TextContent = string.IsNullOrEmpty(topNode.TextContent) 
-                        ? textBetween 
-                        : topNode.TextContent + " " + textBetween;
+                if (nextOpen == -1) {
+                    AddTextContent(html.Substring(pos).Trim(), stack);
+                    break;
                 }
-                lastIndex = match.Index + match.Length;
 
-                bool isClosingTag = match.Groups[1].Value == "/";
-                string tagName = match.Groups[2].Value.ToLower();
-                string attributesStr = match.Groups[3].Value;
-                bool isSelfClosing = match.Groups[4].Value == "/" || VoidElements.Contains(tagName);
+                if (nextOpen > pos) {
+                    AddTextContent(html.Substring(pos, nextOpen - pos).Trim(), stack);
+                }
 
-                if (tagName.StartsWith("!")) continue;
+                pos = nextOpen;
+
+                if (pos + 4 <= html.Length && html.Substring(pos, 4) == "<!--") {
+                    int commentEnd = html.IndexOf("-->", pos + 4);
+                    pos = commentEnd != -1 ? commentEnd + 3 : html.Length;
+                    continue;
+                }
+
+                if (pos + 2 <= html.Length && html.Substring(pos, 2) == "<!") {
+                    int doctypeEnd = html.IndexOf('>', pos + 2);
+                    pos = doctypeEnd != -1 ? doctypeEnd + 1 : html.Length;
+                    continue;
+                }
+
+                bool isClosingTag = false;
+                int tagStart = pos + 1;
+                if (tagStart < html.Length && html[tagStart] == '/') {
+                    isClosingTag = true;
+                    tagStart++;
+                }
+
+                int tagEndIndex = html.IndexOf('>', tagStart);
+                if (tagEndIndex == -1) break;
+
+                string insideTag = html.Substring(tagStart, tagEndIndex - tagStart).Trim();
+                pos = tagEndIndex + 1;
+
+                if (string.IsNullOrWhiteSpace(insideTag)) continue;
+
+                bool isSelfClosingExplicit = false;
+                if (insideTag.EndsWith("/")) {
+                    isSelfClosingExplicit = true;
+                    insideTag = insideTag.Substring(0, insideTag.Length - 1).Trim();
+                }
+
+                string tagName;
+                string attributesStr = "";
+
+                int firstSpace = -1;
+                for (int i = 0; i < insideTag.Length; i++) {
+                    if (char.IsWhiteSpace(insideTag[i])) {
+                        firstSpace = i;
+                        break;
+                    }
+                }
+
+                if (firstSpace == -1) {
+                    tagName = insideTag;
+                } else {
+                    tagName = insideTag.Substring(0, firstSpace);
+                    attributesStr = insideTag.Substring(firstSpace + 1);
+                }
+
+                tagName = tagName.ToLowerInvariant();
+                bool isSelfClosing = isSelfClosingExplicit || VoidElements.Contains(tagName);
 
                 if (isClosingTag) {
                     while (stack.Count > 0) {
                         var popped = stack.Pop();
-                        if (string.Equals(popped.TagName, tagName, StringComparison.OrdinalIgnoreCase)) {
-                            break; 
-                        }
+                        if (string.Equals(popped.TagName, tagName, StringComparison.OrdinalIgnoreCase))
+                            break;
                     }
                     continue;
                 }
@@ -59,13 +106,11 @@ namespace backEnd.services {
                     Depth = depth
                 };
 
-                ParseAttributes(attributesStr, domNode);
+                ParseAttributesManual(attributesStr, domNode);
 
-                domNode.Up[0] = parent ?? domNode; 
+                domNode.Up[0] = parent ?? domNode;
                 for (int i = 1; i < 20; i++) {
-                    if (domNode.Up[i - 1] != null && domNode.Up[i - 1].Up != null && domNode.Up[i - 1].Up[i - 1] != null) {
-                        domNode.Up[i] = domNode.Up[i - 1].Up[i - 1];
-                    }
+                    domNode.Up[i] = domNode.Up[i - 1].Up[i - 1];
                 }
 
                 if (parent != null) {
@@ -82,25 +127,62 @@ namespace backEnd.services {
             return root;
         }
 
-        private void ParseAttributes(string attributesStr, DomNode node) {
-            if (string.IsNullOrWhiteSpace(attributesStr)) return;
+        private void AddTextContent(string text, Stack<DomNode> stack) {
+            if (!string.IsNullOrEmpty(text) && stack.Count > 0) {
+                var topNode = stack.Peek();
+                topNode.TextContent = string.IsNullOrEmpty(topNode.TextContent)
+                    ? text
+                    : topNode.TextContent + " " + text;
+            }
+        }
 
-            var matches = Regex.Matches(attributesStr, @"([a-zA-Z0-9_-]+)\s*=\s*(?:'([^']*)'|""([^""]*)""|([^\s>]+))");
+        private void ParseAttributesManual(string attrStr, DomNode node) {
+            if (string.IsNullOrWhiteSpace(attrStr)) return;
 
-            foreach (Match m in matches) {
-                string key = m.Groups[1].Value.ToLower();
-                string val = m.Groups[2].Success ? m.Groups[2].Value : (m.Groups[3].Success ? m.Groups[3].Value : m.Groups[4].Value);
+            int pos = 0;
+            while (pos < attrStr.Length) {
+                while (pos < attrStr.Length && char.IsWhiteSpace(attrStr[pos])) pos++;
+                if (pos >= attrStr.Length) break;
+
+                int keyStart = pos;
+                while (pos < attrStr.Length && attrStr[pos] != '=' && !char.IsWhiteSpace(attrStr[pos])) pos++;
+                string key = attrStr.Substring(keyStart, pos - keyStart).ToLowerInvariant();
+
+                while (pos < attrStr.Length && char.IsWhiteSpace(attrStr[pos])) pos++;
+
+                if (pos >= attrStr.Length || attrStr[pos] != '=') {
+                    continue;
+                }
+                pos++;
+
+                while (pos < attrStr.Length && char.IsWhiteSpace(attrStr[pos])) pos++;
+                if (pos >= attrStr.Length) break;
+
+                string value = "";
+                char quote = attrStr[pos];
+                if (quote == '"' || quote == '\'') {
+                    pos++;
+                    int valStart = pos;
+                    while (pos < attrStr.Length && attrStr[pos] != quote) pos++;
+                    value = attrStr.Substring(valStart, pos - valStart);
+                    if (pos < attrStr.Length) pos++;
+                } else {
+                    int valStart = pos;
+                    while (pos < attrStr.Length && !char.IsWhiteSpace(attrStr[pos])) pos++;
+                    value = attrStr.Substring(valStart, pos - valStart);
+                }
 
                 if (key == "id") {
-                    node.ElementId = val;
-                } 
-                else if (key == "class") {
-                    node.Classes = val.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    node.ElementId = value;
+                } else if (key == "class") {
+                    node.Classes = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 }
             }
         }
 
         public DomNode GetLCA(DomNode u, DomNode v) {
+            if (u == null || v == null) return null;
+
             if (u.Depth < v.Depth) (u, v) = (v, u);
 
             for (int i = 19; i >= 0; i--) {
