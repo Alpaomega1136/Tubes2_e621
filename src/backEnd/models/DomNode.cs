@@ -7,6 +7,7 @@ namespace backEnd.models {
         public string TagName { get; set; } = "";
         public string? ElementId { get; set; }
         public List<string> Classes { get; set; } = new();
+        public Dictionary<string, string> Attributes { get; set; } = new();
         public string? TextContent { get; set; }
         public bool IsTextNode { get; set; } = false;
         public List<DomNode> Children { get; set; } = new();

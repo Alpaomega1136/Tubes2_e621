@@ -161,13 +161,16 @@ namespace backEnd.services {
                 while (pos < attrStr.Length && attrStr[pos] != '=' && !char.IsWhiteSpace(attrStr[pos])) pos++;
                 string key = attrStr.Substring(keyStart, pos - keyStart).ToLowerInvariant();
 
+                if (string.IsNullOrEmpty(key)) { pos++; continue; }
+
                 while (pos < attrStr.Length && char.IsWhiteSpace(attrStr[pos])) pos++;
 
-              
                 if (pos >= attrStr.Length || attrStr[pos] != '=') {
+                    node.Attributes[key] = "";
                     continue;
                 }
                 pos++;
+
                 while (pos < attrStr.Length && char.IsWhiteSpace(attrStr[pos])) pos++;
                 if (pos >= attrStr.Length) break;
 
@@ -190,6 +193,8 @@ namespace backEnd.services {
                 } else if (key == "class") {
                     node.Classes = value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 }
+
+                node.Attributes[key] = value;
             }
         }
 
@@ -201,19 +206,18 @@ namespace backEnd.services {
 
             if (u.Depth < v.Depth) (u, v) = (v, u);
 
-            for (int i = 19; i >= 0; i--) {
+            for (int i = 19; i >= 0; i--)
                 if (u.Depth - (1 << i) >= v.Depth)
                     u = u.Up[i];
-            }
 
             if (u == v) return u;
 
-            for (int i = 19; i >= 0; i--) {
+            for (int i = 19; i >= 0; i--)
                 if (u.Up[i] != v.Up[i]) {
                     u = u.Up[i];
                     v = v.Up[i];
                 }
-            }
+
             return u.Up[0];
         }
     }

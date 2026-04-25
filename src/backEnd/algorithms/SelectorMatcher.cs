@@ -30,26 +30,59 @@ namespace backEnd.algorithms {
             string? tag = null;
             string? id = null;
             List<string> classes = new List<string>();
+            List<(string key, string? value)> attrSelectors = new List<(string, string?)>();
 
-            int lastPos = 0;
-            char mode = '\0';
-
-            Action<string> assignValue = (val) => {
-                if (string.IsNullOrEmpty(val)) return;
-                if (mode == '\0') tag = val;
-                else if (mode == '#') id = val;
-                else if (mode == '.') classes.Add(val);
-            };
-
-            for (int pos = 0; pos < selector.Length; pos++) {
+            int pos = 0;
+            while (pos < selector.Length) {
                 char c = selector[pos];
-                if (c == '#' || c == '.' || c == ':') {
-                    assignValue(selector.Substring(lastPos, pos - lastPos));
-                    mode = c;
-                    lastPos = pos + 1;
+
+                if (c == '#') {
+                    pos++;
+                    int start = pos;
+                    while (pos < selector.Length && selector[pos] != '.' && 
+                           selector[pos] != '#' && selector[pos] != '[' && 
+                           selector[pos] != ':') pos++;
+                    id = selector.Substring(start, pos - start);
+
+                } else if (c == '.') {
+                    pos++;
+                    int start = pos;
+                    while (pos < selector.Length && selector[pos] != '.' && 
+                           selector[pos] != '#' && selector[pos] != '[' && 
+                           selector[pos] != ':') pos++;
+                    classes.Add(selector.Substring(start, pos - start));
+
+                } else if (c == '[') {
+                    pos++;
+                    int start = pos;
+                    while (pos < selector.Length && selector[pos] != ']') pos++;
+                    string attrExpr = selector.Substring(start, pos - start);
+                    pos++;
+
+                    int eqIndex = attrExpr.IndexOf('=');
+                    if (eqIndex == -1) {
+                        attrSelectors.Add((attrExpr.Trim().ToLowerInvariant(), null));
+                    } else {
+                        string attrKey = attrExpr.Substring(0, eqIndex).Trim().ToLowerInvariant();
+                        string attrVal = attrExpr.Substring(eqIndex + 1).Trim().Trim('"', '\'');
+                        attrSelectors.Add((attrKey, attrVal));
+                    }
+
+                } else if (c == ':') {
+                    pos++;
+                    while (pos < selector.Length && selector[pos] != '.' && 
+                           selector[pos] != '#' && selector[pos] != '[' && 
+                           selector[pos] != ':') pos++;
+
+                } else {
+                    int start = pos;
+                    while (pos < selector.Length && selector[pos] != '.' && 
+                           selector[pos] != '#' && selector[pos] != '[' && 
+                           selector[pos] != ':') pos++;
+                    string tagStr = selector.Substring(start, pos - start);
+                    if (!string.IsNullOrEmpty(tagStr)) tag = tagStr;
                 }
             }
-            assignValue(selector.Substring(lastPos));
 
             if (tag != null && !string.Equals(node.TagName, tag, StringComparison.OrdinalIgnoreCase))
                 return false;
@@ -59,8 +92,17 @@ namespace backEnd.algorithms {
 
             if (classes.Any()) {
                 if (node.Classes == null || !node.Classes.Any()) return false;
-                foreach (var cls in classes) {
+                foreach (var cls in classes)
                     if (!node.Classes.Contains(cls, StringComparer.OrdinalIgnoreCase))
+                        return false;
+            }
+
+            if (attrSelectors.Any()) {
+                foreach (var (attrKey, attrVal) in attrSelectors) {
+                    if (!node.Attributes.ContainsKey(attrKey))
+                        return false;
+
+                    if (attrVal != null && !string.Equals(node.Attributes[attrKey], attrVal, StringComparison.OrdinalIgnoreCase))
                         return false;
                 }
             }
@@ -135,14 +177,20 @@ namespace backEnd.algorithms {
 
                 char c = selector[pos];
                 if (c == '>' || c == '+' || c == '~') {
-                    if (tokens.Count > 0 && tokens[tokens.Count - 1] == " ") tokens.RemoveAt(tokens.Count - 1);
+                    if (tokens.Count > 0 && tokens[tokens.Count - 1] == " ")
+                        tokens.RemoveAt(tokens.Count - 1);
                     tokens.Add(c.ToString());
                     pos++;
                 } else {
                     int start = pos;
                     while (pos < selector.Length && !char.IsWhiteSpace(selector[pos]) &&
                            selector[pos] != '>' && selector[pos] != '+' && selector[pos] != '~') {
-                        pos++;
+                        if (selector[pos] == '[') {
+                            while (pos < selector.Length && selector[pos] != ']') pos++;
+                            if (pos < selector.Length) pos++;
+                        } else {
+                            pos++;
+                        }
                     }
                     tokens.Add(selector.Substring(start, pos - start));
 
@@ -171,10 +219,9 @@ namespace backEnd.algorithms {
             var parent = GetParent(node);
             if (parent == null) return null;
             int index = parent.Children.IndexOf(node!);
-            for (int i = index - 1; i >= 0; i--) {
+            for (int i = index - 1; i >= 0; i--)
                 if (!parent.Children[i].IsTextNode)
                     return parent.Children[i];
-            }
             return null;
         }
     }
