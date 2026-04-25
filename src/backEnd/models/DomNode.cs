@@ -8,6 +8,7 @@ namespace backEnd.models {
         public string? ElementId { get; set; }
         public List<string> Classes { get; set; } = new();
         public string? TextContent { get; set; }
+        public bool IsTextNode { get; set; } = false;
         public List<DomNode> Children { get; set; } = new();
         public int Depth { get; set; }
 

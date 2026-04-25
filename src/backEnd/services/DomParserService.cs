@@ -24,12 +24,12 @@ namespace backEnd.services {
                 int nextOpen = html.IndexOf('<', pos);
 
                 if (nextOpen == -1) {
-                    AddTextContent(html.Substring(pos).Trim(), stack);
+                    AddTextNode(html.Substring(pos).Trim(), stack);
                     break;
                 }
 
                 if (nextOpen > pos) {
-                    AddTextContent(html.Substring(pos, nextOpen - pos).Trim(), stack);
+                    AddTextNode(html.Substring(pos, nextOpen - pos).Trim(), stack);
                 }
 
                 pos = nextOpen;
@@ -103,7 +103,8 @@ namespace backEnd.services {
                 var domNode = new DomNode {
                     Id = $"node-{++nodeCounter_}",
                     TagName = tagName,
-                    Depth = depth
+                    Depth = depth,
+                    IsTextNode = false
                 };
 
                 ParseAttributesManual(attributesStr, domNode);
@@ -127,13 +128,25 @@ namespace backEnd.services {
             return root;
         }
 
-        private void AddTextContent(string text, Stack<DomNode> stack) {
-            if (!string.IsNullOrEmpty(text) && stack.Count > 0) {
-                var topNode = stack.Peek();
-                topNode.TextContent = string.IsNullOrEmpty(topNode.TextContent)
-                    ? text
-                    : topNode.TextContent + " " + text;
+        private void AddTextNode(string text, Stack<DomNode> stack) {
+            if (string.IsNullOrEmpty(text) || stack.Count == 0) return;
+
+            var parent = stack.Peek();
+
+            var textNode = new DomNode {
+                Id = $"node-{++nodeCounter_}",
+                TagName = "#text",
+                IsTextNode = true,
+                TextContent = text,
+                Depth = parent.Depth + 1
+            };
+
+            textNode.Up[0] = parent;
+            for (int i = 1; i < 20; i++) {
+                textNode.Up[i] = textNode.Up[i - 1].Up[i - 1];
             }
+
+            parent.Children.Add(textNode);
         }
 
         private void ParseAttributesManual(string attrStr, DomNode node) {
@@ -150,11 +163,11 @@ namespace backEnd.services {
 
                 while (pos < attrStr.Length && char.IsWhiteSpace(attrStr[pos])) pos++;
 
+              
                 if (pos >= attrStr.Length || attrStr[pos] != '=') {
                     continue;
                 }
                 pos++;
-
                 while (pos < attrStr.Length && char.IsWhiteSpace(attrStr[pos])) pos++;
                 if (pos >= attrStr.Length) break;
 
@@ -182,6 +195,9 @@ namespace backEnd.services {
 
         public DomNode GetLCA(DomNode u, DomNode v) {
             if (u == null || v == null) return null;
+
+            if (u.IsTextNode) u = u.Up[0];
+            if (v.IsTextNode) v = v.Up[0];
 
             if (u.Depth < v.Depth) (u, v) = (v, u);
 

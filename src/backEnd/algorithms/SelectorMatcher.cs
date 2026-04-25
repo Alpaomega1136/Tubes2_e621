@@ -7,7 +7,9 @@ namespace backEnd.algorithms {
     public static class SelectorMatcher {
 
         public static bool Matches(DomNode node, string selector) {
+            if (node.IsTextNode) return false;
             if (string.IsNullOrWhiteSpace(selector)) return false;
+
             selector = selector.Trim();
 
             bool hasCombinator = false;
@@ -22,6 +24,7 @@ namespace backEnd.algorithms {
         }
 
         public static bool MatchesSingle(DomNode node, string selector) {
+            if (node.IsTextNode) return false;
             if (selector == "*") return true;
 
             string? tag = null;
@@ -132,8 +135,7 @@ namespace backEnd.algorithms {
 
                 char c = selector[pos];
                 if (c == '>' || c == '+' || c == '~') {
-                    if (tokens.Count > 0 && tokens[tokens.Count - 1] == " ")
-                        tokens.RemoveAt(tokens.Count - 1);
+                    if (tokens.Count > 0 && tokens[tokens.Count - 1] == " ") tokens.RemoveAt(tokens.Count - 1);
                     tokens.Add(c.ToString());
                     pos++;
                 } else {
@@ -169,7 +171,11 @@ namespace backEnd.algorithms {
             var parent = GetParent(node);
             if (parent == null) return null;
             int index = parent.Children.IndexOf(node!);
-            return index > 0 ? parent.Children[index - 1] : null;
+            for (int i = index - 1; i >= 0; i--) {
+                if (!parent.Children[i].IsTextNode)
+                    return parent.Children[i];
+            }
+            return null;
         }
     }
 }
