@@ -1,6 +1,8 @@
+// BfsAlgorithm.cs
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using backEnd.models;
 
@@ -14,51 +16,43 @@ namespace backEnd.algorithms {
             queue.Enqueue(root);
 
             while (queue.Count > 0) {
-                if (maxResults.HasValue && matches.Count >= maxResults.Value)
-                    break;
+                if (maxResults.HasValue && matches.Count >= maxResults.Value) break;
 
                 var node = queue.Dequeue();
-
                 visitAction(node);
 
-                if (node.Children != null) {
-                    foreach (var child in node.Children) {
+                if (node.Children != null)
+                    foreach (var child in node.Children)
                         queue.Enqueue(child);
-                    }
-                }
             }
         }
 
         public static void ExecuteParallel(DomNode root, Action<DomNode> visitAction, int? maxResults, ConcurrentBag<DomNode> matches) {
-            var queue = new ConcurrentQueue<DomNode>();
-            queue.Enqueue(root);
+            if (root == null) return;
 
-            while (!queue.IsEmpty) {
+            var currentLevel = new List<DomNode> { root };
+
+            while (currentLevel.Count > 0) {
                 if (maxResults.HasValue && matches.Count >= maxResults.Value) break;
 
-                int levelSize = queue.Count;
-                var currentLevelNodes = new List<DomNode>(levelSize);
+                var nextLevel = new ConcurrentBag<DomNode>();
 
-                for (int i = 0; i < levelSize; i++) {
-                    if (queue.TryDequeue(out var node))
-                        currentLevelNodes.Add(node);
-                }
-                Parallel.ForEach(currentLevelNodes, (node, state) => {
-                    if (state.IsStopped) return;
-
+                Parallel.ForEach(currentLevel, new ParallelOptions {
+                    MaxDegreeOfParallelism = Environment.ProcessorCount
+                },
+                (node, state) => {
                     if (maxResults.HasValue && matches.Count >= maxResults.Value) {
-                        state.Stop();
-                        return;
+                        state.Stop(); return;
                     }
 
                     visitAction(node);
 
-                    if (maxResults.HasValue && matches.Count >= maxResults.Value)
-                        state.Stop();
-
-                    foreach (var child in node.Children)
-                        queue.Enqueue(child);
+                    if (node.Children != null)
+                        foreach (var child in node.Children)
+                            nextLevel.Add(child);
                 });
+
+                currentLevel = nextLevel.ToList();
             }
         }
     }
